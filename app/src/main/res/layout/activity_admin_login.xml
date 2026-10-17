@@ -17,8 +17,10 @@
         app:titleTextColor="@color/white" />
 
     <ScrollView
+        android:id="@+id/scrollViewAdminLogin"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
         android:fillViewport="true">
 
         <LinearLayout
@@ -26,7 +28,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="24dp"
+            android:paddingBottom="40dp">
 
             <Space
                 android:layout_width="match_parent"
@@ -142,5 +145,3 @@
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
-
-

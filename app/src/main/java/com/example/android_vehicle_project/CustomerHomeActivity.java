@@ -164,7 +164,16 @@ public class CustomerHomeActivity extends AppCompatActivity {
                 tvDetails.setText(item.brand + " • " + item.model + " • " + item.fuel + " • " + item.seats + " seats");
                 tvPrice.setText(String.format("₹%,.0f/day", item.price));
 
-                btnBook.setOnClickListener(v -> Toast.makeText(this, "Booking functionality for " + item.name + " will be added later.", Toast.LENGTH_SHORT).show());
+                btnBook.setOnClickListener(v -> {
+                    Intent intent = new Intent(CustomerHomeActivity.this, BookingActivity.class);
+                    intent.putExtra("USERNAME", username);
+                    intent.putExtra("VEHICLE_ID", item.id);
+                    intent.putExtra("VEHICLE_NAME", item.name);
+                    intent.putExtra("VEHICLE_BRAND", item.brand);
+                    intent.putExtra("VEHICLE_MODEL", item.model);
+                    intent.putExtra("VEHICLE_PRICE", item.price);
+                    startActivity(intent);
+                });
 
                 item.cardView = view;
                 vehicleList.add(item);

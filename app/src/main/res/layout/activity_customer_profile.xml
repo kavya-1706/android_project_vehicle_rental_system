@@ -11,22 +11,26 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/primary_navy"
-        app:navigationIcon="@drawable/ic_vehicle"
         app:title="Customer Profile"
         app:titleTextColor="@color/white" />
 
     <ScrollView
+        android:id="@+id/scrollViewProfile"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
         android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="20dp"
+            android:paddingBottom="32dp">
 
+            <!-- Read-Only Profile Info Card -->
             <LinearLayout
+                android:id="@+id/cardProfileView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_card"
@@ -138,18 +142,240 @@
                     android:textSize="15sp" />
             </LinearLayout>
 
+            <!-- Edit Profile Form Card -->
+            <LinearLayout
+                android:id="@+id/cardProfileEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Edit Profile Details"
+                    android:textColor="@color/primary_navy"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="12dp"
+                    android:background="@color/border_gray" />
+
+                <!-- First Name -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="FIRST NAME"
+                    android:textColor="@color/text_gray"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etEditFirstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginBottom="12dp"
+                    android:autofillHints="personGivenName"
+                    android:background="@drawable/bg_booking_input"
+                    android:hint="First Name"
+                    android:inputType="textPersonName"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="@color/text_dark"
+                    android:textSize="14sp" />
+
+                <!-- Last Name -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="LAST NAME"
+                    android:textColor="@color/text_gray"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etEditLastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginBottom="12dp"
+                    android:autofillHints="personFamilyName"
+                    android:background="@drawable/bg_booking_input"
+                    android:hint="Last Name"
+                    android:inputType="textPersonName"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="@color/text_dark"
+                    android:textSize="14sp" />
+
+                <!-- Email -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="EMAIL"
+                    android:textColor="@color/text_gray"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etEditEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginBottom="12dp"
+                    android:autofillHints="emailAddress"
+                    android:background="@drawable/bg_booking_input"
+                    android:hint="Email Address"
+                    android:inputType="textEmailAddress"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="@color/text_dark"
+                    android:textSize="14sp" />
+
+                <!-- Phone -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="PHONE NUMBER"
+                    android:textColor="@color/text_gray"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etEditPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginBottom="12dp"
+                    android:autofillHints="phone"
+                    android:background="@drawable/bg_booking_input"
+                    android:hint="Phone Number"
+                    android:inputType="phone"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="@color/text_dark"
+                    android:textSize="14sp" />
+
+                <!-- Address -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="ADDRESS"
+                    android:textColor="@color/text_gray"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etEditAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginBottom="12dp"
+                    android:autofillHints="postalAddress"
+                    android:background="@drawable/bg_booking_input"
+                    android:hint="Address"
+                    android:inputType="textPostalAddress"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="@color/text_dark"
+                    android:textSize="14sp" />
+
+                <!-- Driving License -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="DRIVING LICENSE NUMBER"
+                    android:textColor="@color/text_gray"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etEditLicense"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginBottom="16dp"
+                    android:autofillHints="none"
+                    android:background="@drawable/bg_booking_input"
+                    android:hint="Driving License Number"
+                    android:inputType="textCapCharacters"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="@color/text_dark"
+                    android:textSize="14sp" />
+
+                <!-- Save & Cancel Buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnCancelEdit"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_cancel_button"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:paddingHorizontal="4dp"
+                        android:paddingVertical="0dp"
+                        android:text="CANCEL"
+                        android:textColor="@color/primary_navy"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:backgroundTint="@null" />
+
+                    <Button
+                        android:id="@+id/btnSaveProfile"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1.2"
+                        android:background="@drawable/bg_button"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:paddingHorizontal="4dp"
+                        android:paddingVertical="0dp"
+                        android:text="SAVE CHANGES"
+                        android:textColor="@color/white"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:backgroundTint="@null" />
+                </LinearLayout>
+
+            </LinearLayout>
+
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="24dp" />
+                android:layout_height="20dp" />
 
+            <!-- Edit Details Button -->
+            <Button
+                android:id="@+id/btnEditProfile"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_button"
+                android:text="EDIT DETAILS"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:backgroundTint="@null" />
+
+            <!-- Logout Button -->
             <Button
                 android:id="@+id/btnLogoutProfile"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:background="@drawable/bg_button"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_cancel_button"
                 android:text="@string/logout"
-                android:textColor="@color/white"
-                android:textSize="16sp"
+                android:textColor="@color/primary_navy"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 app:backgroundTint="@null" />
 

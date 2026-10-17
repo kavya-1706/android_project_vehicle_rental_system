@@ -12,4 +12,15 @@
 
     <style name="Theme.Android_vehicle_project"
         parent="Base.Theme.android_vehicle_project" />
+
+    <!-- Dark Gray Theme for Booking Summary Confirmation Dialog -->
+    <style name="BookingDialogTheme" parent="Theme.Material3.DayNight.Dialog.Alert">
+        <item name="android:background">#222222</item>
+        <item name="colorSurface">#222222</item>
+        <item name="android:windowBackground">#222222</item>
+        <item name="colorPrimary">#FF6633</item>
+        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorSecondary">#E0E0E0</item>
+    </style>
 </resources>

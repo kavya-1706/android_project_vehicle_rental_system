@@ -53,12 +53,17 @@
 
     <Button
         android:id="@+id/btnBookVehicle"
-        android:layout_width="76dp"
-        android:layout_height="38dp"
+        android:layout_width="84dp"
+        android:layout_height="42dp"
         android:background="@drawable/bg_button"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="0dp"
         android:text="@string/book"
         android:textColor="@color/white"
-        android:textSize="13sp"
+        android:textSize="14sp"
         android:textStyle="bold"
         app:backgroundTint="@null" />
 </LinearLayout>

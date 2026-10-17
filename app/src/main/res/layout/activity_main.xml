@@ -39,8 +39,10 @@
     </androidx.appcompat.widget.Toolbar>
 
     <ScrollView
+        android:id="@+id/scrollViewMain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
         android:fillViewport="true">
 
         <LinearLayout
@@ -48,7 +50,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="24dp"
+            android:paddingBottom="40dp">
 
             <ImageView
                 android:layout_width="80dp"
@@ -218,4 +221,3 @@
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
-

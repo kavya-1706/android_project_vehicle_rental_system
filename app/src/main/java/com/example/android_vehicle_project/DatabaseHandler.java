@@ -315,4 +315,60 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + " WHERE u." + COLUMN_USERNAME + " = ?";
         return db.rawQuery(query, new String[]{username});
     }
+
+    // Helper: Get user ID by username
+    public int getUserIdByUsername(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT " + COLUMN_USER_ID + " FROM " + TABLE_USERS + " WHERE " + COLUMN_USERNAME + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+        int userId = -1;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int idIdx = cursor.getColumnIndex(COLUMN_USER_ID);
+                if (idIdx != -1) {
+                    userId = cursor.getInt(idIdx);
+                }
+            }
+            cursor.close();
+        }
+        return userId;
+    }
+
+    // Helper: Add a new booking
+    public boolean addBooking(int userId, int vehicleId, String pickupDate, String dropDate,
+                              int totalDays, double totalAmount, String bookingStatus,
+                              String paymentStatus, String paymentTime) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_BOOKING_USER_ID, userId);
+        values.put(COLUMN_BOOKING_VEHICLE_ID, vehicleId);
+        values.put(COLUMN_PICKUP_DATE, pickupDate);
+        values.put(COLUMN_DROP_DATE, dropDate);
+        values.put(COLUMN_TOTAL_DAYS, totalDays);
+        values.put(COLUMN_TOTAL_AMOUNT, totalAmount);
+        values.put(COLUMN_BOOKING_STATUS, bookingStatus);
+        values.put(COLUMN_PAYMENT_STATUS, paymentStatus);
+        values.put(COLUMN_PAYMENT_TIME, paymentTime);
+
+        long result = db.insert(TABLE_BOOKINGS, null, values);
+        return result != -1;
+    }
+
+    // Helper: Update user profile details
+    public boolean updateUserProfile(String username, String firstName, String lastName, String email,
+                                     String phone, String address, String license) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_FIRST_NAME, firstName);
+        values.put(COLUMN_LAST_NAME, lastName);
+        values.put(COLUMN_EMAIL, email);
+        values.put(COLUMN_PHONE, phone);
+        values.put(COLUMN_ADDRESS, address);
+        values.put(COLUMN_LICENSE, license);
+
+        int rows = db.update(TABLE_USERS, values, COLUMN_USERNAME + " = ?", new String[]{username});
+        return rows > 0;
+    }
 }
+
+

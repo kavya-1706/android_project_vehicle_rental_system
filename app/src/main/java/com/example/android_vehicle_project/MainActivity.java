@@ -1,4 +1,5 @@
 package com.example.android_vehicle_project;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView ivTogglePassword;
     private Button btnLogin, btnLoginAsAdmin;
     private TextView tvForgotPassword, tvRegister;
+    private ScrollView scrollViewMain;
     private boolean isPasswordVisible = false;
 
     @Override
@@ -25,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        scrollViewMain = findViewById(R.id.scrollViewMain);
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         ivTogglePassword = findViewById(R.id.ivTogglePassword);
@@ -32,6 +36,18 @@ public class MainActivity extends AppCompatActivity {
         btnLoginAsAdmin = findViewById(R.id.btnLoginAsAdmin);
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
         tvRegister = findViewById(R.id.tvRegister);
+
+        // Auto-scroll focused input fields above soft keyboard
+        View.OnFocusChangeListener autoScrollFocusListener = (v, hasFocus) -> {
+            if (hasFocus && scrollViewMain != null) {
+                scrollViewMain.postDelayed(() -> {
+                    scrollViewMain.smoothScrollTo(0, v.getBottom() + 100);
+                }, 150);
+            }
+        };
+
+        etUsername.setOnFocusChangeListener(autoScrollFocusListener);
+        etPassword.setOnFocusChangeListener(autoScrollFocusListener);
 
         // Password visibility toggle
         ivTogglePassword.setOnClickListener(v -> {
@@ -123,4 +139,3 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 }
-

@@ -3,8 +3,10 @@ package com.example.android_vehicle_project;
 import android.app.DatePickerDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +18,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private EditText etFirstName, etLastName, etEmail, etDob, etPhone, etAddress, etLicense, etRegUsername, etRegPassword;
     private Button btnCreateAccount;
+    private ScrollView scrollViewRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +33,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
         toolbar.setNavigationOnClickListener(v -> finish());
 
+        scrollViewRegister = findViewById(R.id.scrollViewRegister);
         etFirstName = findViewById(R.id.etFirstName);
         etLastName = findViewById(R.id.etLastName);
         etEmail = findViewById(R.id.etEmail);
@@ -40,6 +44,25 @@ public class RegisterActivity extends AppCompatActivity {
         etRegUsername = findViewById(R.id.etRegUsername);
         etRegPassword = findViewById(R.id.etRegPassword);
         btnCreateAccount = findViewById(R.id.btnCreateAccount);
+
+        // Auto-scroll focused input fields above soft keyboard
+        View.OnFocusChangeListener autoScrollFocusListener = (v, hasFocus) -> {
+            if (hasFocus && scrollViewRegister != null) {
+                scrollViewRegister.postDelayed(() -> {
+                    scrollViewRegister.smoothScrollTo(0, v.getBottom() + 100);
+                }, 150);
+            }
+        };
+
+        etFirstName.setOnFocusChangeListener(autoScrollFocusListener);
+        etLastName.setOnFocusChangeListener(autoScrollFocusListener);
+        etEmail.setOnFocusChangeListener(autoScrollFocusListener);
+        etDob.setOnFocusChangeListener(autoScrollFocusListener);
+        etPhone.setOnFocusChangeListener(autoScrollFocusListener);
+        etAddress.setOnFocusChangeListener(autoScrollFocusListener);
+        etLicense.setOnFocusChangeListener(autoScrollFocusListener);
+        etRegUsername.setOnFocusChangeListener(autoScrollFocusListener);
+        etRegPassword.setOnFocusChangeListener(autoScrollFocusListener);
 
         // DatePickerDialog for Date of Birth
         etDob.setOnClickListener(v -> showDatePickerDialog());
@@ -118,5 +141,3 @@ public class RegisterActivity extends AppCompatActivity {
         finish();
     }
 }
-
-

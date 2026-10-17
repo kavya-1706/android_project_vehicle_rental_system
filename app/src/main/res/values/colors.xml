@@ -10,4 +10,8 @@
     <color name="border_gray">#D1D5DB</color>
     <color name="card_bg">#FFFFFFFF</color>
     <color name="error_red">#D32F2F</color>
+    <color name="topbar_navy">#203D5E</color>
+    <color name="booking_bg">#F2F4F8</color>
+    <color name="button_orange">#FF6633</color>
+    <color name="label_gray">#666666</color>
 </resources>

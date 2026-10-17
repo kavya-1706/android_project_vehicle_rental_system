@@ -3,9 +3,11 @@ package com.example.android_vehicle_project;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +18,7 @@ public class AdminLoginActivity extends AppCompatActivity {
     private EditText etAdminUsername, etAdminPassword;
     private ImageView ivAdminTogglePassword;
     private Button btnAdminLoginSubmit;
+    private ScrollView scrollViewAdminLogin;
     private boolean isPasswordVisible = false;
 
     @Override
@@ -31,10 +34,23 @@ public class AdminLoginActivity extends AppCompatActivity {
         }
         toolbar.setNavigationOnClickListener(v -> finish());
 
+        scrollViewAdminLogin = findViewById(R.id.scrollViewAdminLogin);
         etAdminUsername = findViewById(R.id.etAdminUsername);
         etAdminPassword = findViewById(R.id.etAdminPassword);
         ivAdminTogglePassword = findViewById(R.id.ivAdminTogglePassword);
         btnAdminLoginSubmit = findViewById(R.id.btnAdminLoginSubmit);
+
+        // Auto-scroll focused input fields above soft keyboard
+        View.OnFocusChangeListener autoScrollFocusListener = (v, hasFocus) -> {
+            if (hasFocus && scrollViewAdminLogin != null) {
+                scrollViewAdminLogin.postDelayed(() -> {
+                    scrollViewAdminLogin.smoothScrollTo(0, v.getBottom() + 100);
+                }, 150);
+            }
+        };
+
+        etAdminUsername.setOnFocusChangeListener(autoScrollFocusListener);
+        etAdminPassword.setOnFocusChangeListener(autoScrollFocusListener);
 
         ivAdminTogglePassword.setOnClickListener(v -> {
             if (isPasswordVisible) {

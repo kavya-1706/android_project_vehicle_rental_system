@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/booking_bg"
+    android:orientation="vertical">
+
+    <!-- Top App Bar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarBooking"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/topbar_navy"
+        app:title="Book Vehicle"
+        app:titleTextColor="@color/white" />
+
+    <!-- Main Scrollable Content -->
+    <ScrollView
+        android:id="@+id/scrollViewBooking"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:paddingBottom="48dp">
+
+            <!-- Selected Vehicle Summary Card -->
+            <LinearLayout
+                android:id="@+id/cardVehicleSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_card"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
+
+                <ImageView
+                    android:id="@+id/ivBookingVehicleIcon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="Vehicle Icon"
+                    android:src="@drawable/ic_vehicle" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvBookingVehicleNameHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Honda City"
+                        android:textColor="@color/text_dark"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvBookingVehicleDetailsHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Honda • City 2023 • petrol"
+                        android:textColor="@color/text_gray"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvBookingVehiclePriceHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="₹1,800/day"
+                    android:textColor="@color/topbar_navy"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 1. NAME FIELD -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="NAME"
+                android:textColor="@color/label_gray"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etCustomerName"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="16dp"
+                android:autofillHints="name"
+                android:background="@drawable/bg_booking_input"
+                android:hint="Customer Name"
+                android:inputType="textPersonName"
+                android:paddingHorizontal="12dp"
+                android:textColor="@color/text_dark"
+                android:textSize="14sp" />
+
+            <!-- 2. PHONE · DL NO. · EMAIL (auto-filled) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="PHONE · DL NO. · EMAIL (AUTO-FILLED)"
+                android:textColor="@color/label_gray"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <!-- Phone Field -->
+            <EditText
+                android:id="@+id/etCustomerPhone"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="8dp"
+                android:autofillHints="phone"
+                android:background="@drawable/bg_booking_input"
+                android:hint="Phone Number (+91 90000 00000)"
+                android:inputType="phone"
+                android:paddingHorizontal="12dp"
+                android:textColor="@color/text_dark"
+                android:textSize="14sp" />
+
+            <!-- DL No Field -->
+            <EditText
+                android:id="@+id/etCustomerDL"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="8dp"
+                android:autofillHints="none"
+                android:background="@drawable/bg_booking_input"
+                android:hint="Driving Licence No."
+                android:inputType="textCapCharacters"
+                android:paddingHorizontal="12dp"
+                android:textColor="@color/text_dark"
+                android:textSize="14sp" />
+
+            <!-- Email Field -->
+            <EditText
+                android:id="@+id/etCustomerEmail"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="16dp"
+                android:autofillHints="emailAddress"
+                android:background="@drawable/bg_booking_input"
+                android:hint="Email Address"
+                android:inputType="textEmailAddress"
+                android:paddingHorizontal="12dp"
+                android:textColor="@color/text_dark"
+                android:textSize="14sp" />
+
+            <!-- 3. PICK-UP DATE / DROP DATE -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal">
+
+                <!-- Pick-up Date Container -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:text="PICK-UP DATE"
+                        android:textColor="@color/label_gray"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <RelativeLayout
+                        android:id="@+id/rlPickupDateContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@drawable/bg_booking_input"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingHorizontal="12dp">
+
+                        <EditText
+                            android:id="@+id/etPickupDate"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_toStartOf="@id/ivPickupCalendarIcon"
+                            android:autofillHints="none"
+                            android:background="@null"
+                            android:clickable="false"
+                            android:cursorVisible="false"
+                            android:focusable="false"
+                            android:hint="DD/MM"
+                            android:inputType="none"
+                            android:textColor="@color/text_dark"
+                            android:textSize="14sp" />
+
+                        <ImageView
+                            android:id="@+id/ivPickupCalendarIcon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:contentDescription="Select pickup date"
+                            android:src="@drawable/ic_calendar"
+                            app:tint="@color/text_gray" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <!-- Drop Date Container -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:text="DROP DATE"
+                        android:textColor="@color/label_gray"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <RelativeLayout
+                        android:id="@+id/rlDropDateContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@drawable/bg_booking_input"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingHorizontal="12dp">
+
+                        <EditText
+                            android:id="@+id/etDropDate"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_toStartOf="@id/ivDropCalendarIcon"
+                            android:autofillHints="none"
+                            android:background="@null"
+                            android:clickable="false"
+                            android:cursorVisible="false"
+                            android:focusable="false"
+                            android:hint="DD/MM"
+                            android:inputType="none"
+                            android:textColor="@color/text_dark"
+                            android:textSize="14sp" />
+
+                        <ImageView
+                            android:id="@+id/ivDropCalendarIcon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:contentDescription="Select drop date"
+                            android:src="@drawable/ic_calendar"
+                            app:tint="@color/text_gray" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- 4. INSTRUCTIONS -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="INSTRUCTIONS"
+                android:textColor="@color/label_gray"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvShopHours"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="Vehicle shop opening and closing hours: 9:00 AM to 5:00 PM. Please collect and return the vehicle within these operating hours."
+                android:textColor="@color/text_gray"
+                android:textSize="12sp" />
+
+            <!-- 5. TERMS AND CONDITIONS -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/cbTerms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/topbar_navy" />
+
+                <TextView
+                    android:id="@+id/tvTermsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="I agree to the rental terms &amp; conditions"
+                    android:textColor="@color/topbar_navy"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- 6. BOOKING BUTTON -->
+            <Button
+                android:id="@+id/btnConfirmBooking"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_orange_button"
+                android:text="CONFIRM BOOKING &amp; PAY"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:backgroundTint="@null" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
