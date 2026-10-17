@@ -92,7 +92,9 @@ public class CustomerHomeActivity extends AppCompatActivity {
 
         // Past navigation
         navPast.setOnClickListener(v -> {
-            Toast.makeText(this, "No previous bookings yet.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(CustomerHomeActivity.this, PastBookingsActivity.class);
+            intent.putExtra("USERNAME", username);
+            startActivity(intent);
         });
 
         // Home navigation

@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "RideRent.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Table Names
     public static final String TABLE_USERS = "users";
@@ -114,7 +114,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_VEHICLES_TABLE);
         db.execSQL(CREATE_BOOKINGS_TABLE);
 
-        // Seed default users and sample vehicles
+        // Seed default users, vehicles, and bookings
         seedInitialData(db);
     }
 
@@ -141,21 +141,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         adminValues.put(COLUMN_ROLE, "admin");
         db.insert(TABLE_USERS, null, adminValues);
 
-        // Seed Customer user (abcd / abcd)
-        ContentValues customerValues = new ContentValues();
-        customerValues.put(COLUMN_FIRST_NAME, "Priya");
-        customerValues.put(COLUMN_LAST_NAME, "Sharma");
-        customerValues.put(COLUMN_EMAIL, "priya@email.com");
-        customerValues.put(COLUMN_DOB, "15 / 08 / 1998");
-        customerValues.put(COLUMN_PHONE, "9876543210");
-        customerValues.put(COLUMN_ADDRESS, "MG Road, Bangalore");
-        customerValues.put(COLUMN_LICENSE, "KA01 20230099887");
-        customerValues.put(COLUMN_USERNAME, "abcd");
-        customerValues.put(COLUMN_PASSWORD, "abcd");
-        customerValues.put(COLUMN_ROLE, "customer");
-        db.insert(TABLE_USERS, null, customerValues);
 
-        // Also seed legacy demo user (priya / 123456) for backward compatibility
+
+        // Seed Customer user (priya / 123456)
         ContentValues priyaValues = new ContentValues();
         priyaValues.put(COLUMN_FIRST_NAME, "Priya");
         priyaValues.put(COLUMN_LAST_NAME, "Sharma");
@@ -167,7 +155,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         priyaValues.put(COLUMN_USERNAME, "priya");
         priyaValues.put(COLUMN_PASSWORD, "123456");
         priyaValues.put(COLUMN_ROLE, "customer");
-        db.insert(TABLE_USERS, null, priyaValues);
+        long priyaUserId = db.insert(TABLE_USERS, null, priyaValues);
+
+        // Seed Customer user (k / k)
+        ContentValues kValues = new ContentValues();
+        kValues.put(COLUMN_FIRST_NAME, "K");
+        kValues.put(COLUMN_LAST_NAME, "Kumar");
+        kValues.put(COLUMN_EMAIL, "k.kumar@email.com");
+        kValues.put(COLUMN_DOB, "01 / 01 / 2000");
+        kValues.put(COLUMN_PHONE, "9876543212");
+        kValues.put(COLUMN_ADDRESS, "Indiranagar, Bangalore");
+        kValues.put(COLUMN_LICENSE, "KA01 20230099889");
+        kValues.put(COLUMN_USERNAME, "k");
+        kValues.put(COLUMN_PASSWORD, "k");
+        kValues.put(COLUMN_ROLE, "customer");
+        long kUserId = db.insert(TABLE_USERS, null, kValues);
 
         // Seed Sample Vehicles
         ContentValues vehicle1 = new ContentValues();
@@ -180,7 +182,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         vehicle1.put(COLUMN_PRICE_PER_DAY, 1800.00);
         vehicle1.put(COLUMN_DESCRIPTION, "Comfortable 5-seater sedan for city and highway rides");
         vehicle1.put(COLUMN_VEHICLE_STATUS, "available");
-        db.insert(TABLE_VEHICLES, null, vehicle1);
+        long vehicle1Id = db.insert(TABLE_VEHICLES, null, vehicle1);
 
         ContentValues vehicle2 = new ContentValues();
         vehicle2.put(COLUMN_VEHICLE_NAME, "Royal Enfield Classic 350");
@@ -192,7 +194,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         vehicle2.put(COLUMN_PRICE_PER_DAY, 700.00);
         vehicle2.put(COLUMN_DESCRIPTION, "Powerful cruiser motorcycle for long journeys");
         vehicle2.put(COLUMN_VEHICLE_STATUS, "available");
-        db.insert(TABLE_VEHICLES, null, vehicle2);
+        long vehicle2Id = db.insert(TABLE_VEHICLES, null, vehicle2);
 
         ContentValues vehicle3 = new ContentValues();
         vehicle3.put(COLUMN_VEHICLE_NAME, "Mahindra Thar");
@@ -205,6 +207,32 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         vehicle3.put(COLUMN_DESCRIPTION, "4x4 Off-road SUV for outdoor adventures");
         vehicle3.put(COLUMN_VEHICLE_STATUS, "available");
         db.insert(TABLE_VEHICLES, null, vehicle3);
+
+        // Seed Sample Booking for user "priya"
+        ContentValues priyaBooking = new ContentValues();
+        priyaBooking.put(COLUMN_BOOKING_USER_ID, priyaUserId);
+        priyaBooking.put(COLUMN_BOOKING_VEHICLE_ID, vehicle2Id);
+        priyaBooking.put(COLUMN_PICKUP_DATE, "2026-10-15");
+        priyaBooking.put(COLUMN_DROP_DATE, "2026-10-17");
+        priyaBooking.put(COLUMN_TOTAL_DAYS, 2);
+        priyaBooking.put(COLUMN_TOTAL_AMOUNT, 1400.00);
+        priyaBooking.put(COLUMN_BOOKING_STATUS, "ongoing");
+        priyaBooking.put(COLUMN_PAYMENT_STATUS, "success");
+        priyaBooking.put(COLUMN_PAYMENT_TIME, "14:15:00");
+        db.insert(TABLE_BOOKINGS, null, priyaBooking);
+
+        // Seed Sample Booking for user "k"
+        ContentValues kBooking = new ContentValues();
+        kBooking.put(COLUMN_BOOKING_USER_ID, kUserId);
+        kBooking.put(COLUMN_BOOKING_VEHICLE_ID, vehicle1Id);
+        kBooking.put(COLUMN_PICKUP_DATE, "2026-10-20");
+        kBooking.put(COLUMN_DROP_DATE, "2026-10-23");
+        kBooking.put(COLUMN_TOTAL_DAYS, 3);
+        kBooking.put(COLUMN_TOTAL_AMOUNT, 5400.00);
+        kBooking.put(COLUMN_BOOKING_STATUS, "upcoming");
+        kBooking.put(COLUMN_PAYMENT_STATUS, "success");
+        kBooking.put(COLUMN_PAYMENT_TIME, "10:30:00");
+        db.insert(TABLE_BOOKINGS, null, kBooking);
     }
 
     // Helper: Authenticate user credentials with specific role
@@ -275,5 +303,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_VEHICLES + " WHERE " + COLUMN_VEHICLE_STATUS + " = 'available'";
         return db.rawQuery(query, null);
+    }
+
+    // Helper: Get all bookings for a user
+    public Cursor getUserBookings(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT b.*, v." + COLUMN_VEHICLE_NAME + ", v." + COLUMN_BRAND + ", v." + COLUMN_MODEL
+                + " FROM " + TABLE_BOOKINGS + " b"
+                + " JOIN " + TABLE_USERS + " u ON b." + COLUMN_BOOKING_USER_ID + " = u." + COLUMN_USER_ID
+                + " JOIN " + TABLE_VEHICLES + " v ON b." + COLUMN_BOOKING_VEHICLE_ID + " = v." + COLUMN_VEHICLE_ID
+                + " WHERE u." + COLUMN_USERNAME + " = ?";
+        return db.rawQuery(query, new String[]{username});
     }
 }

@@ -42,6 +42,10 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".PastBookingsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".AdminLoginActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
