@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_light"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
     <!-- Top Toolbar -->
@@ -12,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/primary_navy"
+        app:navigationIcon="@drawable/ic_arrow_back"
         app:title="My Bookings"
         app:titleTextColor="@color/white" />
 

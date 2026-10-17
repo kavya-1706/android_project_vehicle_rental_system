@@ -24,10 +24,6 @@ public class PastBookingsActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbarPastBookings);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
         toolbar.setNavigationOnClickListener(v -> finish());
 
         llBookingsContainer = findViewById(R.id.llBookingsContainer);

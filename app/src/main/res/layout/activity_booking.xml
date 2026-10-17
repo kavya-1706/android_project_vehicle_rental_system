@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/booking_bg"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
     <!-- Top App Bar -->
@@ -12,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/topbar_navy"
+        app:navigationIcon="@drawable/ic_arrow_back"
         app:title="Book Vehicle"
         app:titleTextColor="@color/white" />
 

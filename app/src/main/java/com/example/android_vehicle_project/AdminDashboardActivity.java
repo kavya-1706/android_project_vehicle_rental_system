@@ -1,87 +1,154 @@
 package com.example.android_vehicle_project;
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * AdminDashboardActivity serves as the Home Page for the Admin users.
+ * It provides a high-level view of the system statistics (Total Vehicles, Total Bookings)
+ * and acts as a central hub for navigating to other management modules using Quick Actions.
+ */
 public class AdminDashboardActivity extends AppCompatActivity {
 
-    private EditText etSearchAdmin;
-    private LinearLayout cardManageVehicles, cardViewBookings, cardCustomerPayments, cardFeedback, cardLateFines;
-    private ImageView ivAdminLogout, ivFilter;
+    // ---------------- UI Element Declarations ---------------- //
+    // Text views to display statistics dynamically
+    private TextView tvTotalVehicles, tvTotalBookings;
+
+    // Linear layouts that act as clickable buttons for our Quick Actions
+    private LinearLayout actionViewBookings, actionManageVehicles, actionManageUsers, actionProfile, actionLogout;
+
+    // Top bar interactive icons
+    private ImageView ivMenu, ivNotifications;
+
+    // Database handler instance to execute queries for our dashboard stats
+    private DatabaseHandler dbHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Connect this Activity to the newly redesigned XML layout
         setContentView(R.layout.activity_admin_dashboard);
 
-        etSearchAdmin = findViewById(R.id.etSearchAdmin);
-        ivAdminLogout = findViewById(R.id.ivAdminLogout);
-        ivFilter = findViewById(R.id.ivFilter);
+        // Initialize the DatabaseHandler to communicate with SQLite
+        dbHandler = new DatabaseHandler(this);
 
-        cardManageVehicles = findViewById(R.id.cardManageVehicles);
-        cardViewBookings = findViewById(R.id.cardViewBookings);
-        cardCustomerPayments = findViewById(R.id.cardCustomerPayments);
-        cardFeedback = findViewById(R.id.cardFeedback);
-        cardLateFines = findViewById(R.id.cardLateFines);
+        // Bind Java view variables to the actual XML UI components
+        initViews();
 
-        ivAdminLogout.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminDashboardActivity.this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        // Retrieve and display dynamic statistics from the database
+        loadDashboardStats();
+
+        // Attach user interaction logic (clicks) to our UI elements
+        setupClickListeners();
+    }
+
+    /**
+     * Finds and assigns all UI components from the XML layout to Java variables.
+     * This separates the initialization logic, keeping onCreate clean.
+     */
+    private void initViews() {
+        // Statistics labels
+        tvTotalVehicles = findViewById(R.id.tvTotalVehicles);
+        tvTotalBookings = findViewById(R.id.tvTotalBookings);
+
+        // Quick Action cards (used as large buttons)
+        actionViewBookings = findViewById(R.id.actionViewBookings);
+        actionManageVehicles = findViewById(R.id.actionManageVehicles);
+        actionManageUsers = findViewById(R.id.actionManageUsers);
+        actionProfile = findViewById(R.id.actionProfile);
+        actionLogout = findViewById(R.id.actionLogout);
+
+        // Toolbar Icons
+        ivMenu = findViewById(R.id.ivMenu);
+        ivNotifications = findViewById(R.id.ivNotifications);
+    }
+
+    /**
+     * Fetches current data from the database and updates the UI Dashboard cards.
+     * This ensures the admin sees up-to-date numbers as soon as they open the app.
+     */
+    private void loadDashboardStats() {
+        // Fetch total vehicle count from the DB helper
+        int totalVehicles = dbHandler.getTotalVehiclesCount();
+
+        // Fetch total bookings count from the DB helper
+        int totalBookings = dbHandler.getTotalBookingsCount();
+
+        // Convert the integer counts to Strings and display them in the TextViews
+        tvTotalVehicles.setText(String.valueOf(totalVehicles));
+        tvTotalBookings.setText(String.valueOf(totalBookings));
+    }
+
+    /**
+     * Centralized method to attach OnClickListeners to all interactive UI elements.
+     * It handles navigation and simple interactive feedback.
+     */
+    private void setupClickListeners() {
+        // Handle Top-Left Menu Icon Click (Placeholder for future side-drawer)
+        ivMenu.setOnClickListener(v -> {
+            Toast.makeText(this, "Menu Clicked", Toast.LENGTH_SHORT).show();
+        });
+
+        // Handle Top-Right Notification Bell Click
+        ivNotifications.setOnClickListener(v -> {
+            Toast.makeText(this, "Notifications Clicked", Toast.LENGTH_SHORT).show();
+        });
+
+        // Handle "View Bookings" action click.
+        // This opens the combined AdminRecordsActivity
+        actionViewBookings.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminRecordsActivity.class);
             startActivity(intent);
+        });
+
+        // Handle "Manage Vehicles" action click
+        actionManageVehicles.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminManageVehiclesActivity.class);
+            startActivity(intent);
+        });
+
+        // Handle "Manage Users" action click
+        actionManageUsers.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminManageUsersActivity.class);
+            startActivity(intent);
+        });
+
+        // Handle "Profile" action click
+        actionProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminProfileActivity.class);
+            startActivity(intent);
+        });
+
+        // Handle "Logout" action click securely
+        actionLogout.setOnClickListener(v -> {
+            // Intent to take the user back to the Main (Login) Screen
+            Intent intent = new Intent(AdminDashboardActivity.this, MainActivity.class);
+
+            // Critical Step: Clear the back-stack flags so the user cannot press
+            // the Android 'Back' button and return to this authenticated dashboard.
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+            // Launch the Login Activity
+            startActivity(intent);
+
+            // Terminate the current Admin Dashboard Activity
             finish();
         });
-
-        ivFilter.setOnClickListener(v -> Toast.makeText(this, "Filter options", Toast.LENGTH_SHORT).show());
-
-        // Card clicks open FeaturePlaceholderActivity
-        cardManageVehicles.setOnClickListener(v -> openPlaceholder("Manage Vehicles", "Add / edit / remove vehicles"));
-        cardViewBookings.setOnClickListener(v -> openPlaceholder("View Bookings", "All customer bookings"));
-        cardCustomerPayments.setOnClickListener(v -> openPlaceholder("Customer Payments", "Payment records"));
-        cardFeedback.setOnClickListener(v -> openPlaceholder("Feedback", "Customer reviews"));
-        cardLateFines.setOnClickListener(v -> openPlaceholder("Late Return Fines", "Manage overdue fines"));
-
-        // Search filter
-        etSearchAdmin.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterDashboard(s.toString().toLowerCase().trim());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
     }
 
-    private void openPlaceholder(String title, String subtitle) {
-        Intent intent = new Intent(AdminDashboardActivity.this, FeaturePlaceholderActivity.class);
-        intent.putExtra("FEATURE_TITLE", title);
-        intent.putExtra("FEATURE_SUBTITLE", subtitle);
-        startActivity(intent);
-    }
 
-    private void filterDashboard(String query) {
-        boolean m1 = query.isEmpty() || "manage vehicles".contains(query) || "vehicles".contains(query);
-        boolean m2 = query.isEmpty() || "view bookings".contains(query) || "bookings".contains(query);
-        boolean m3 = query.isEmpty() || "customer payments".contains(query) || "payments".contains(query);
-        boolean m4 = query.isEmpty() || "feedback".contains(query) || "reviews".contains(query);
-        boolean m5 = query.isEmpty() || "late return fines".contains(query) || "fines".contains(query);
 
-        cardManageVehicles.setVisibility(m1 ? View.VISIBLE : View.GONE);
-        cardViewBookings.setVisibility(m2 ? View.VISIBLE : View.GONE);
-        cardCustomerPayments.setVisibility(m3 ? View.VISIBLE : View.GONE);
-        cardFeedback.setVisibility(m4 ? View.VISIBLE : View.GONE);
-        cardLateFines.setVisibility(m5 ? View.VISIBLE : View.GONE);
+    // Note: When you return to the dashboard from another activity,
+    // it's a good idea to refresh the stats in case data was modified.
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadDashboardStats();
     }
 }
-
