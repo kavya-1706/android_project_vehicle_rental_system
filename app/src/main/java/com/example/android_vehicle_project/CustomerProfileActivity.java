@@ -39,10 +39,6 @@ public class CustomerProfileActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbarProfile);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
         toolbar.setNavigationOnClickListener(v -> finish());
 
         // Username

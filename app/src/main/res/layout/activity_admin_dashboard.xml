@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_light"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
     <!-- Top Toolbar -->
@@ -20,334 +21,361 @@
             android:paddingEnd="16dp"
             android:paddingStart="0dp">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginEnd="8dp"
-                    android:contentDescription="@string/admin_dashboard_title"
-                    android:src="@drawable/ic_shield"
-                    app:tint="@color/white" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/admin_dashboard_title"
-                    android:textColor="@color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
             <ImageView
-                android:id="@+id/ivAdminLogout"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_alignParentEnd="true"
+                android:id="@+id/ivMenu"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
+                android:src="@drawable/ic_menu_admin"
+                android:contentDescription="Menu"
+                app:tint="@color/white"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
-                android:contentDescription="@string/logout"
-                android:focusable="true"
-                android:padding="6dp"
-                android:src="@drawable/ic_logout" />
+                android:focusable="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Admin Dashboard"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/ivNotifications"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_notifications_admin"
+                android:contentDescription="Notifications"
+                app:tint="@color/white"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"/>
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
 
+    <!-- Main Content Scrollable Area -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="20dp">
 
-            <!-- Search Bar with Filter Icon -->
+            <!-- Welcome Section -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginBottom="24dp">
+
+                <ImageView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/ic_account_circle_admin"
+                    android:contentDescription="Admin Avatar"
+                    android:layout_marginBottom="12dp"
+                    app:tint="@color/text_dark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Welcome Back, Admin!"
+                    android:textColor="@color/text_dark"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Manage Your Rentals."
+                    android:textColor="@color/text_gray"
+                    android:textSize="16sp"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+
+            <!-- Dashboard Stats -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:baselineAligned="false"
-                android:orientation="horizontal">
+                android:layout_marginBottom="24dp">
 
-                <RelativeLayout
+                <!-- Total Vehicles Card -->
+                <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_input"
-                    android:paddingHorizontal="12dp">
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_card"
+                    android:elevation="2dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                    <ImageView
-                        android:id="@+id/ivAdminSearchIcon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:contentDescription="@string/search_admin"
-                        android:src="@drawable/ic_search" />
-
-                    <EditText
-                        android:id="@+id/etSearchAdmin"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_toEndOf="@id/ivAdminSearchIcon"
-                        android:autofillHints="name"
-                        android:background="@null"
-                        android:hint="@string/search_admin"
-                        android:imeOptions="actionSearch"
-                        android:inputType="text"
-                        android:paddingEnd="12dp"
-                        android:paddingStart="12dp"
-                        android:textColor="@color/text_dark"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Vehicles"
+                        android:textColor="@color/text_gray"
                         android:textSize="14sp" />
-                </RelativeLayout>
 
-                <ImageView
-                    android:id="@+id/ivFilter"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    <TextView
+                        android:id="@+id/tvTotalVehicles"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/text_dark"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="8dp"/>
+                </LinearLayout>
+
+                <!-- Total Bookings Card -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_input"
-                    android:clickable="true"
-                    android:contentDescription="Filter"
-                    android:focusable="true"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_calendar" />
+                    android:background="@drawable/bg_card"
+                    android:elevation="2dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Bookings"
+                        android:textColor="@color/text_gray"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvTotalBookings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/text_dark"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="8dp"/>
+                </LinearLayout>
             </LinearLayout>
 
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="20dp" />
+            <!-- Quick Actions Header -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Quick Actions"
+                android:textColor="@color/text_dark"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp" />
 
-            <!-- Card 1: Manage Vehicles -->
+            <!-- Quick Actions List -->
+
+            <!-- Action 1: View Bookings -->
             <LinearLayout
-                android:id="@+id/cardManageVehicles"
+                android:id="@+id/actionViewBookings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
                 android:background="@drawable/bg_card"
-                android:baselineAligned="false"
+                android:elevation="2dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="16dp">
 
-                <LinearLayout
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_book_admin"
+                    android:contentDescription="View Bookings Icon" />
+
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/manage_vehicles"
-                        android:textColor="@color/text_dark"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/manage_vehicles_sub"
-                        android:textColor="@color/text_gray"
-                        android:textSize="13sp" />
-                </LinearLayout>
+                    android:layout_marginStart="16dp"
+                    android:text="View Bookings"
+                    android:textColor="@color/text_dark"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:contentDescription="@string/manage_vehicles"
-                    android:src="@drawable/ic_arrow_right" />
+                    android:src="@drawable/ic_arrow_right"
+                    app:tint="@color/text_gray"
+                    android:contentDescription="Arrow Right" />
             </LinearLayout>
 
-            <!-- Card 2: View Bookings -->
+            <!-- Action 2: Manage Vehicles -->
             <LinearLayout
-                android:id="@+id/cardViewBookings"
+                android:id="@+id/actionManageVehicles"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
                 android:background="@drawable/bg_card"
-                android:baselineAligned="false"
+                android:elevation="2dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="16dp">
 
-                <LinearLayout
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_directions_car_admin"
+                    android:contentDescription="Manage Vehicles Icon" />
+
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/view_bookings"
-                        android:textColor="@color/text_dark"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/view_bookings_sub"
-                        android:textColor="@color/text_gray"
-                        android:textSize="13sp" />
-                </LinearLayout>
+                    android:layout_marginStart="16dp"
+                    android:text="Manage Vehicles"
+                    android:textColor="@color/text_dark"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:contentDescription="@string/view_bookings"
-                    android:src="@drawable/ic_arrow_right" />
+                    android:src="@drawable/ic_arrow_right"
+                    app:tint="@color/text_gray"
+                    android:contentDescription="Arrow Right" />
             </LinearLayout>
 
-            <!-- Card 3: Customer Payments -->
+            <!-- Action 3: Manage Users -->
             <LinearLayout
-                android:id="@+id/cardCustomerPayments"
+                android:id="@+id/actionManageUsers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
                 android:background="@drawable/bg_card"
-                android:baselineAligned="false"
+                android:elevation="2dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="16dp">
 
-                <LinearLayout
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_people_admin"
+                    android:contentDescription="Manage Users Icon" />
+
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/customer_payments"
-                        android:textColor="@color/text_dark"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/customer_payments_sub"
-                        android:textColor="@color/text_gray"
-                        android:textSize="13sp" />
-                </LinearLayout>
+                    android:layout_marginStart="16dp"
+                    android:text="Manage Users"
+                    android:textColor="@color/text_dark"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:contentDescription="@string/customer_payments"
-                    android:src="@drawable/ic_arrow_right" />
+                    android:src="@drawable/ic_arrow_right"
+                    app:tint="@color/text_gray"
+                    android:contentDescription="Arrow Right" />
             </LinearLayout>
 
-            <!-- Card 4: Feedback -->
+            <!-- Action 4: Profile -->
             <LinearLayout
-                android:id="@+id/cardFeedback"
+                android:id="@+id/actionProfile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
                 android:background="@drawable/bg_card"
-                android:baselineAligned="false"
+                android:elevation="2dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="16dp">
 
-                <LinearLayout
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_account_circle_admin"
+                    android:contentDescription="Profile Icon" />
+
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/feedback"
-                        android:textColor="@color/text_dark"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/feedback_sub"
-                        android:textColor="@color/text_gray"
-                        android:textSize="13sp" />
-                </LinearLayout>
+                    android:layout_marginStart="16dp"
+                    android:text="Profile"
+                    android:textColor="@color/text_dark"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:contentDescription="@string/feedback"
-                    android:src="@drawable/ic_arrow_right" />
+                    android:src="@drawable/ic_arrow_right"
+                    app:tint="@color/text_gray"
+                    android:contentDescription="Arrow Right" />
             </LinearLayout>
 
-            <!-- Card 5: Late Return Fines -->
+            <!-- Action 5: Logout -->
             <LinearLayout
-                android:id="@+id/cardLateFines"
+                android:id="@+id/actionLogout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
                 android:background="@drawable/bg_card"
-                android:baselineAligned="false"
+                android:elevation="2dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="16dp">
 
-                <LinearLayout
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_logout"
+                    app:tint="@color/error_red"
+                    android:contentDescription="Logout Icon" />
+
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/late_return_fines"
-                        android:textColor="@color/text_dark"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/late_return_fines_sub"
-                        android:textColor="@color/text_gray"
-                        android:textSize="13sp" />
-                </LinearLayout>
+                    android:layout_marginStart="16dp"
+                    android:text="Logout"
+                    android:textColor="@color/error_red"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:contentDescription="@string/late_return_fines"
-                    android:src="@drawable/ic_arrow_right" />
+                    android:src="@drawable/ic_arrow_right"
+                    app:tint="@color/error_red"
+                    android:contentDescription="Arrow Right" />
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
-
-

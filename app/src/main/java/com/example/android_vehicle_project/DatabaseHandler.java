@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "RideRent.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Table Names
     public static final String TABLE_USERS = "users";
@@ -52,6 +52,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String COLUMN_BOOKING_STATUS = "booking_status";
     public static final String COLUMN_PAYMENT_STATUS = "payment_status";
     public static final String COLUMN_PAYMENT_TIME = "payment_time";
+    public static final String COLUMN_FEEDBACK = "feedback";
+    public static final String COLUMN_RATING = "rating";
+    public static final String COLUMN_LATE_FINE = "late_fine";
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -106,6 +109,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + COLUMN_BOOKING_STATUS + " TEXT, "
                 + COLUMN_PAYMENT_STATUS + " TEXT, "
                 + COLUMN_PAYMENT_TIME + " TEXT, "
+                + COLUMN_FEEDBACK + " TEXT, "
+                + COLUMN_RATING + " REAL, "
+                + COLUMN_LATE_FINE + " REAL DEFAULT 0.0, "
                 + "FOREIGN KEY(" + COLUMN_BOOKING_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "), "
                 + "FOREIGN KEY(" + COLUMN_BOOKING_VEHICLE_ID + ") REFERENCES " + TABLE_VEHICLES + "(" + COLUMN_VEHICLE_ID + ")"
                 + ");";
@@ -219,6 +225,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         priyaBooking.put(COLUMN_BOOKING_STATUS, "ongoing");
         priyaBooking.put(COLUMN_PAYMENT_STATUS, "success");
         priyaBooking.put(COLUMN_PAYMENT_TIME, "14:15:00");
+        priyaBooking.put(COLUMN_FEEDBACK, "Great car, very clean!");
+        priyaBooking.put(COLUMN_RATING, 4.5);
+        priyaBooking.put(COLUMN_LATE_FINE, 0.0);
         db.insert(TABLE_BOOKINGS, null, priyaBooking);
 
         // Seed Sample Booking for user "k"
@@ -232,6 +241,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         kBooking.put(COLUMN_BOOKING_STATUS, "upcoming");
         kBooking.put(COLUMN_PAYMENT_STATUS, "success");
         kBooking.put(COLUMN_PAYMENT_TIME, "10:30:00");
+        kBooking.put(COLUMN_FEEDBACK, "");
+        kBooking.put(COLUMN_RATING, 0.0);
+        kBooking.put(COLUMN_LATE_FINE, 0.0);
         db.insert(TABLE_BOOKINGS, null, kBooking);
     }
 
@@ -368,6 +380,139 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         int rows = db.update(TABLE_USERS, values, COLUMN_USERNAME + " = ?", new String[]{username});
         return rows > 0;
+    }
+
+    // --- ADMIN METHODS --- //
+
+    // Get all bookings (includes payments, feedback, users, vehicles)
+    public Cursor getAllAdminRecords() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT b.*, u." + COLUMN_USERNAME + ", v." + COLUMN_VEHICLE_NAME + ", v." + COLUMN_VEHICLE_NUM
+                + " FROM " + TABLE_BOOKINGS + " b"
+                + " JOIN " + TABLE_USERS + " u ON b." + COLUMN_BOOKING_USER_ID + " = u." + COLUMN_USER_ID
+                + " JOIN " + TABLE_VEHICLES + " v ON b." + COLUMN_BOOKING_VEHICLE_ID + " = v." + COLUMN_VEHICLE_ID
+                + " ORDER BY b." + COLUMN_BOOKING_ID + " DESC";
+        return db.rawQuery(query, null);
+    }
+
+    // Get all vehicles (Admin view)
+    public Cursor getAllVehiclesAdmin() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_VEHICLES;
+        return db.rawQuery(query, null);
+    }
+
+    // Add new vehicle
+    public boolean addVehicle(String name, String brand, String model, String num, String fuel,
+                              int capacity, double price, String desc, String status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_VEHICLE_NAME, name);
+        values.put(COLUMN_BRAND, brand);
+        values.put(COLUMN_MODEL, model);
+        values.put(COLUMN_VEHICLE_NUM, num);
+        values.put(COLUMN_FUEL, fuel);
+        values.put(COLUMN_SEATING_CAPACITY, capacity);
+        values.put(COLUMN_PRICE_PER_DAY, price);
+        values.put(COLUMN_DESCRIPTION, desc);
+        values.put(COLUMN_VEHICLE_STATUS, status);
+        long result = db.insert(TABLE_VEHICLES, null, values);
+        return result != -1;
+    }
+
+    // Update vehicle completely
+    public boolean updateVehicle(int id, String name, String brand, String model, String num, String fuel,
+                                 int capacity, double price, String desc, String status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_VEHICLE_NAME, name);
+        values.put(COLUMN_BRAND, brand);
+        values.put(COLUMN_MODEL, model);
+        values.put(COLUMN_VEHICLE_NUM, num);
+        values.put(COLUMN_FUEL, fuel);
+        values.put(COLUMN_SEATING_CAPACITY, capacity);
+        values.put(COLUMN_PRICE_PER_DAY, price);
+        values.put(COLUMN_DESCRIPTION, desc);
+        values.put(COLUMN_VEHICLE_STATUS, status);
+
+        int rows = db.update(TABLE_VEHICLES, values, COLUMN_VEHICLE_ID + " = ?", new String[]{String.valueOf(id)});
+        return rows > 0;
+    }
+
+    // Delete vehicle
+    public boolean deleteVehicle(int vehicleId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rows = db.delete(TABLE_VEHICLES, COLUMN_VEHICLE_ID + " = ?", new String[]{String.valueOf(vehicleId)});
+        return rows > 0;
+    }
+
+    // Update vehicle status
+    public boolean updateVehicleStatus(int vehicleId, String status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_VEHICLE_STATUS, status);
+        int rows = db.update(TABLE_VEHICLES, values, COLUMN_VEHICLE_ID + " = ?", new String[]{String.valueOf(vehicleId)});
+        return rows > 0;
+    }
+
+    // Update late return fine
+    public boolean updateLateFine(int bookingId, double fineAmount) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_LATE_FINE, fineAmount);
+        int rows = db.update(TABLE_BOOKINGS, values, COLUMN_BOOKING_ID + " = ?", new String[]{String.valueOf(bookingId)});
+        return rows > 0;
+    }
+
+    // Get all users
+    public Cursor getAllUsers() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_USERS, null);
+    }
+
+    // Delete a user
+    public boolean deleteUser(int userId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rows = db.delete(TABLE_USERS, COLUMN_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+        return rows > 0;
+    }
+
+    // --- ADMIN DASHBOARD STATS METHODS --- //
+
+    /**
+     * Retrieves the total count of vehicles in the database.
+     * Used in the Admin Dashboard to display quick statistics.
+     * @return Total number of vehicles as an integer.
+     */
+    public int getTotalVehiclesCount() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_VEHICLES, null);
+        int count = 0;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                count = cursor.getInt(0);
+            }
+            cursor.close();
+        }
+        return count;
+    }
+
+    /**
+     * Retrieves the total count of bookings in the database.
+     * Used in the Admin Dashboard to display quick statistics.
+     * @return Total number of bookings as an integer.
+     */
+    public int getTotalBookingsCount() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_BOOKINGS, null);
+        int count = 0;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                count = cursor.getInt(0);
+            }
+            cursor.close();
+        }
+        return count;
     }
 }
 

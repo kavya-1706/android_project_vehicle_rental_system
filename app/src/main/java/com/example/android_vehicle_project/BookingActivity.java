@@ -84,10 +84,6 @@ public class BookingActivity extends AppCompatActivity {
         // Setup Toolbar
         Toolbar toolbar = findViewById(R.id.toolbarBooking);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
         toolbar.setNavigationOnClickListener(v -> finish());
 
         // Bind Views
