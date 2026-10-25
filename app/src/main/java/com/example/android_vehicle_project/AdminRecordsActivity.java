@@ -2,8 +2,6 @@ package com.example.android_vehicle_project;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,20 +19,16 @@ import java.util.List;
 
 /**
  * AdminRecordsActivity maps to the "View Bookings" module.
- * It combines viewing bookings, payments, and feedback into one searchable, filterable screen.
+ * Displays all customer booking records and vehicle details inline.
  */
 public class AdminRecordsActivity extends AppCompatActivity {
 
     private ImageView ivBack, ivSearchBookings;
-    private TextView tabAll, tabUpcoming, tabOngoing, tabCompleted;
     private RecyclerView rvAdminBookings;
-    
+
     private DatabaseHandler dbHandler;
     private BookingsAdapter adapter;
-    private List<BookingRecord> allBookings; // Stores full dataset from DB
-    private List<BookingRecord> filteredBookings; // Stores dataset currently displayed
-    
-    private String currentFilterStatus = "All"; // Active tab filter
+    private List<BookingRecord> bookingsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,36 +48,20 @@ public class AdminRecordsActivity extends AppCompatActivity {
     private void initViews() {
         ivBack = findViewById(R.id.ivBack);
         ivSearchBookings = findViewById(R.id.ivSearchBookings);
-        
-        tabAll = findViewById(R.id.tabAll);
-        tabUpcoming = findViewById(R.id.tabUpcoming);
-        tabOngoing = findViewById(R.id.tabOngoing);
-        tabCompleted = findViewById(R.id.tabCompleted);
-
         rvAdminBookings = findViewById(R.id.rvAdminBookings);
     }
 
     private void setupClickListeners() {
-        // Back Button Logic
-        ivBack.setOnClickListener(v -> finish()); // Closes this Activity, goes back to Dashboard
+        ivBack.setOnClickListener(v -> finish());
 
-        // Search Button Logic (placeholder for search expansion)
         ivSearchBookings.setOnClickListener(v -> {
             Toast.makeText(this, "Search functionality to be implemented", Toast.LENGTH_SHORT).show();
         });
-
-        // Tab Filter Logic
-        tabAll.setOnClickListener(v -> applyFilter("All", tabAll));
-        tabUpcoming.setOnClickListener(v -> applyFilter("upcoming", tabUpcoming));
-        tabOngoing.setOnClickListener(v -> applyFilter("ongoing", tabOngoing));
-        tabCompleted.setOnClickListener(v -> applyFilter("completed", tabCompleted));
     }
 
     private void setupRecyclerView() {
-        allBookings = new ArrayList<>();
-        filteredBookings = new ArrayList<>();
-        
-        adapter = new BookingsAdapter(filteredBookings);
+        bookingsList = new ArrayList<>();
+        adapter = new BookingsAdapter(bookingsList);
         rvAdminBookings.setLayoutManager(new LinearLayoutManager(this));
         rvAdminBookings.setAdapter(adapter);
     }
@@ -92,97 +70,93 @@ public class AdminRecordsActivity extends AppCompatActivity {
      * Executes the JOIN query to fetch Bookings + User Info + Vehicle Info
      */
     private void loadDataFromDatabase() {
-        allBookings.clear();
+        bookingsList.clear();
         Cursor cursor = dbHandler.getAllAdminRecords();
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                // Parse DB row into a BookingRecord object
                 int bookingId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_BOOKING_ID));
                 String status = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_BOOKING_STATUS));
                 String username = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_USERNAME));
+
+                int fnameIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_FIRST_NAME);
+                int lnameIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_LAST_NAME);
+                String fname = fnameIdx != -1 ? cursor.getString(fnameIdx) : "";
+                String lname = lnameIdx != -1 ? cursor.getString(lnameIdx) : "";
+                String customerName = (fname + " " + lname).trim();
+                if (customerName.isEmpty()) customerName = username;
+
                 String vehicleName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_VEHICLE_NAME));
+
+                int brandIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_BRAND);
+                int modelIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_MODEL);
+                String brand = brandIdx != -1 ? cursor.getString(brandIdx) : "";
+                String model = modelIdx != -1 ? cursor.getString(modelIdx) : "";
+
                 String vehicleNum = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_VEHICLE_NUM));
                 String pickup = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_PICKUP_DATE));
                 String drop = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_DROP_DATE));
 
-                BookingRecord record = new BookingRecord(bookingId, username, vehicleName, vehicleNum, pickup, drop, status);
-                allBookings.add(record);
+                int daysIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_TOTAL_DAYS);
+                int amountIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_TOTAL_AMOUNT);
+                int paymentIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_PAYMENT_STATUS);
+                int payTimeIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_PAYMENT_TIME);
+
+                int totalDays = daysIdx != -1 ? cursor.getInt(daysIdx) : 1;
+                double totalAmount = amountIdx != -1 ? cursor.getDouble(amountIdx) : 0.0;
+                String paymentStatus = paymentIdx != -1 ? cursor.getString(paymentIdx) : "success";
+                String paymentTime = payTimeIdx != -1 ? cursor.getString(payTimeIdx) : "";
+
+                BookingRecord record = new BookingRecord(bookingId, customerName, username, vehicleName, brand, model,
+                        vehicleNum, pickup, drop, totalDays, totalAmount, status, paymentStatus, paymentTime);
+                bookingsList.add(record);
             } while (cursor.moveToNext());
             cursor.close();
         }
 
-        // Initially show all
-        applyFilter("All", tabAll);
-    }
-
-    /**
-     * UI logic to switch tabs and filter the dataset
-     */
-    private void applyFilter(String status, TextView selectedTab) {
-        currentFilterStatus = status;
-
-        // Reset all tabs to unselected visual state
-        tabAll.setBackgroundResource(R.drawable.bg_input);
-        tabAll.setTextColor(getResources().getColor(R.color.text_gray));
-        tabUpcoming.setBackgroundResource(R.drawable.bg_input);
-        tabUpcoming.setTextColor(getResources().getColor(R.color.text_gray));
-        tabOngoing.setBackgroundResource(R.drawable.bg_input);
-        tabOngoing.setTextColor(getResources().getColor(R.color.text_gray));
-        tabCompleted.setBackgroundResource(R.drawable.bg_input);
-        tabCompleted.setTextColor(getResources().getColor(R.color.text_gray));
-
-        // Highlight selected tab
-        selectedTab.setBackgroundResource(R.drawable.bg_tab_selected);
-        selectedTab.setTextColor(getResources().getColor(R.color.text_dark));
-
-        // Filter the dataset
-        filteredBookings.clear();
-        if (status.equals("All")) {
-            filteredBookings.addAll(allBookings);
-        } else {
-            for (BookingRecord record : allBookings) {
-                if (record.status.equalsIgnoreCase(status)) {
-                    filteredBookings.add(record);
-                }
-            }
-        }
-        
-        // Notify the adapter to refresh the RecyclerView
         adapter.notifyDataSetChanged();
     }
 
-
     // ------------------ INNER CLASSES FOR RECYCLER VIEW ------------------ //
 
-    /**
-     * Simple POJO (Plain Old Java Object) representing a combined Booking row
-     */
     private static class BookingRecord {
         int bookingId;
         String customerName;
+        String username;
         String vehicleName;
+        String brand;
+        String model;
         String vehicleNum;
         String pickupDate;
         String dropDate;
+        int totalDays;
+        double totalAmount;
         String status;
+        String paymentStatus;
+        String paymentTime;
 
-        public BookingRecord(int bookingId, String customerName, String vehicleName, String vehicleNum, String pickupDate, String dropDate, String status) {
+        public BookingRecord(int bookingId, String customerName, String username, String vehicleName, String brand,
+                             String model, String vehicleNum, String pickupDate, String dropDate, int totalDays,
+                             double totalAmount, String status, String paymentStatus, String paymentTime) {
             this.bookingId = bookingId;
             this.customerName = customerName;
+            this.username = username;
             this.vehicleName = vehicleName;
+            this.brand = brand;
+            this.model = model;
             this.vehicleNum = vehicleNum;
             this.pickupDate = pickupDate;
             this.dropDate = dropDate;
+            this.totalDays = totalDays;
+            this.totalAmount = totalAmount;
             this.status = status;
+            this.paymentStatus = paymentStatus;
+            this.paymentTime = paymentTime;
         }
     }
 
-    /**
-     * RecyclerView Adapter to bind BookingRecord data to the XML view (item_admin_booking.xml)
-     */
     private class BookingsAdapter extends RecyclerView.Adapter<BookingsAdapter.ViewHolder> {
-        
+
         private final List<BookingRecord> items;
 
         public BookingsAdapter(List<BookingRecord> items) {
@@ -200,14 +174,12 @@ public class AdminRecordsActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             BookingRecord record = items.get(position);
 
-            holder.tvCustomerName.setText(record.customerName);
-            holder.tvVehicleDetails.setText(record.vehicleName);
-            holder.tvVehicleNum.setText(record.vehicleNum);
-            
-            // Format dates (e.g. 2026-10-15 - 2026-10-17)
-            holder.tvDates.setText(record.pickupDate + " to " + record.dropDate);
+            holder.tvCustomerName.setText(record.customerName + " (@" + record.username + ")");
+            holder.tvVehicleDetails.setText(record.vehicleName + " (" + record.brand + " " + record.model + ")");
+            holder.tvVehicleNum.setText("Vehicle No: " + record.vehicleNum);
+            holder.tvDates.setText(record.pickupDate + " to " + record.dropDate + " (" + record.totalDays + " days)");
+            holder.tvTotalAmount.setText(String.format("₹%,.0f", record.totalAmount));
 
-            // Set Status tag text and styling
             holder.tvStatusTag.setText(record.status.toUpperCase());
             if (record.status.equalsIgnoreCase("completed")) {
                 holder.tvStatusTag.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
@@ -217,10 +189,8 @@ public class AdminRecordsActivity extends AppCompatActivity {
                 holder.tvStatusTag.setTextColor(getResources().getColor(R.color.button_orange));
             }
 
-            // Click listener for row to open full details (placeholder for now)
-            holder.itemView.setOnClickListener(v -> {
-                Toast.makeText(AdminRecordsActivity.this, "Opening details for Booking #" + record.bookingId, Toast.LENGTH_SHORT).show();
-            });
+            holder.tvPaymentStatus.setText("Payment: " + record.paymentStatus.toUpperCase()
+                    + (record.paymentTime.isEmpty() ? "" : " at " + record.paymentTime));
         }
 
         @Override
@@ -229,7 +199,7 @@ public class AdminRecordsActivity extends AppCompatActivity {
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            TextView tvCustomerName, tvVehicleDetails, tvVehicleNum, tvDates, tvStatusTag;
+            TextView tvCustomerName, tvVehicleDetails, tvVehicleNum, tvDates, tvTotalAmount, tvStatusTag, tvPaymentStatus;
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
@@ -237,7 +207,9 @@ public class AdminRecordsActivity extends AppCompatActivity {
                 tvVehicleDetails = itemView.findViewById(R.id.tvVehicleDetails);
                 tvVehicleNum = itemView.findViewById(R.id.tvVehicleNum);
                 tvDates = itemView.findViewById(R.id.tvDates);
+                tvTotalAmount = itemView.findViewById(R.id.tvTotalAmount);
                 tvStatusTag = itemView.findViewById(R.id.tvStatusTag);
+                tvPaymentStatus = itemView.findViewById(R.id.tvPaymentStatus);
             }
         }
     }

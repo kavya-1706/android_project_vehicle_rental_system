@@ -94,10 +94,10 @@ public class AdminManageVehiclesActivity extends AppCompatActivity {
     }
 
     private void deleteVehicle(int vehicleId, int position) {
-        new AlertDialog.Builder(this)
+        AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Delete Vehicle")
                 .setMessage("Are you sure you want to completely remove this vehicle?")
-                .setPositiveButton("Delete", (dialog, which) -> {
+                .setPositiveButton("Delete", (dialogInterface, which) -> {
                     boolean deleted = dbHandler.deleteVehicle(vehicleId);
                     if (deleted) {
                         Toast.makeText(this, "Vehicle deleted", Toast.LENGTH_SHORT).show();
@@ -108,7 +108,16 @@ public class AdminManageVehiclesActivity extends AppCompatActivity {
                     }
                 })
                 .setNegativeButton("Cancel", null)
-                .show();
+                .create();
+
+        dialog.show();
+
+        if (dialog.getButton(AlertDialog.BUTTON_POSITIVE) != null) {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.error_red));
+        }
+        if (dialog.getButton(AlertDialog.BUTTON_NEGATIVE) != null) {
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.white));
+        }
     }
 
     // ------------------ INNER CLASSES FOR RECYCLER VIEW ------------------ //

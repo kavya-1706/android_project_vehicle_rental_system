@@ -19,7 +19,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText etUsername, etPassword;
     private ImageView ivTogglePassword;
     private Button btnLogin, btnLoginAsAdmin;
-    private TextView tvForgotPassword, tvRegister;
+    // private TextView tvForgotPassword;
+    private TextView tvRegister;
     private ScrollView scrollViewMain;
     private boolean isPasswordVisible = false;
 
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         ivTogglePassword = findViewById(R.id.ivTogglePassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnLoginAsAdmin = findViewById(R.id.btnLoginAsAdmin);
-        tvForgotPassword = findViewById(R.id.tvForgotPassword);
+        //tvForgotPassword = findViewById(R.id.tvForgotPassword);
         tvRegister = findViewById(R.id.tvRegister);
 
         // Auto-scroll focused input fields above soft keyboard
@@ -68,9 +69,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Forgot password link
-        tvForgotPassword.setOnClickListener(v -> {
-            Toast.makeText(MainActivity.this, "Please contact the administrator to reset your password", Toast.LENGTH_LONG).show();
-        });
+//        tvForgotPassword.setOnClickListener(v -> {
+//            Toast.makeText(MainActivity.this, "Please contact the administrator to reset your password", Toast.LENGTH_LONG).show();
+//        });
 
         // Login as Admin button
         btnLoginAsAdmin.setOnClickListener(v -> {

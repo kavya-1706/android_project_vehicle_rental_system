@@ -25,7 +25,7 @@ public class CustomerHomeActivity extends AppCompatActivity {
     private TextView tvGreeting;
     private EditText etSearchVehicle;
     private LinearLayout llVehicleContainer;
-    private LinearLayout navHome, navPast, navRefresh, navProfile;
+    private LinearLayout navHome, navPast, navProfile;
     private ImageView ivProfileIcon;
 
     private DatabaseHandler dbHandler;
@@ -71,23 +71,30 @@ public class CustomerHomeActivity extends AppCompatActivity {
         tvGreeting.setText(getString(R.string.customer_home_greeting, firstName));
 
         ivProfileIcon = findViewById(R.id.ivProfileIcon);
+        ImageView ivLogoutIcon = findViewById(R.id.ivLogoutIcon);
+        ImageView ivMenuIcon = findViewById(R.id.ivMenuIcon);
         etSearchVehicle = findViewById(R.id.etSearchVehicle);
         llVehicleContainer = findViewById(R.id.llVehicleContainer);
 
         navHome = findViewById(R.id.navHome);
         navPast = findViewById(R.id.navPast);
-        navRefresh = findViewById(R.id.navRefresh);
         navProfile = findViewById(R.id.navProfile);
+
+        // Menu icon listener
+        if (ivMenuIcon != null) {
+            ivMenuIcon.setOnClickListener(v -> showTopMenu());
+        }
 
         // Profile navigation / icon
         ivProfileIcon.setOnClickListener(v -> openProfile());
         navProfile.setOnClickListener(v -> openProfile());
 
-        // Refresh navigation
-        navRefresh.setOnClickListener(v -> {
-            etSearchVehicle.setText("");
-            loadVehiclesFromDatabase();
-            Toast.makeText(this, "Refreshed vehicle list", Toast.LENGTH_SHORT).show();
+        // Logout icon navigation
+        ivLogoutIcon.setOnClickListener(v -> {
+            Intent intent = new Intent(CustomerHomeActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         });
 
         // Past navigation
@@ -126,6 +133,37 @@ public class CustomerHomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void showTopMenu() {
+        String[] options = {"Home", "Terms & Conditions"};
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Customer Menu")
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        // Home: Reset search & reload
+                        etSearchVehicle.setText("");
+                        loadVehiclesFromDatabase();
+                        Toast.makeText(this, "Refreshed Home screen", Toast.LENGTH_SHORT).show();
+                    } else if (which == 1) {
+                        // Terms & Conditions
+                        showTermsAndConditions();
+                    }
+                })
+                .setNegativeButton("Close", null)
+                .show();
+    }
+
+    private void showTermsAndConditions() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Rental Terms & Conditions")
+                .setMessage("1. Driver Requirements:\nMust be at least 21 years of age with a valid, unexpired Driving Licence.\n\n" +
+                        "2. Operating Hours:\nVehicle pick-up and drop hours are strictly between 9:00 AM and 5:00 PM. Please collect and return the vehicle within operating hours.\n\n" +
+                        "3. Fuel Policy:\nThe vehicle must be returned with the same fuel level as recorded during pick-up.\n\n" +
+                        "4. Overdue Policy:\nLate returns beyond agreed drop date will incur extra charges.\n\n" +
+                        "5. Safety & Care:\nTraffic violations, toll fees, or physical damage incurred during rental period are customer responsibility.")
+                .setPositiveButton("I Understand", null)
+                .show();
+    }
+
     private void loadVehiclesFromDatabase() {
         llVehicleContainer.removeAllViews();
         vehicleList.clear();
@@ -157,11 +195,23 @@ public class CustomerHomeActivity extends AppCompatActivity {
                 View view = inflater.inflate(R.layout.item_vehicle, llVehicleContainer, false);
                 TextView tvName = view.findViewById(R.id.tvVehicleName);
                 TextView tvDetails = view.findViewById(R.id.tvVehicleDetails);
+                TextView tvDescription = view.findViewById(R.id.tvVehicleDescription);
                 TextView tvPrice = view.findViewById(R.id.tvVehiclePrice);
                 Button btnBook = view.findViewById(R.id.btnBookVehicle);
 
                 tvName.setText(item.name);
-                tvDetails.setText(item.brand + " • " + item.model + " • " + item.fuel + " • " + item.seats + " seats");
+                String detailsStr = item.brand + " " + item.model + "\nFuel: " + item.fuel + "\nCapacity: " + item.seats + " Seats";
+                tvDetails.setText(detailsStr);
+                
+                if (tvDescription != null) {
+                    if (item.description != null && !item.description.trim().isEmpty()) {
+                        tvDescription.setText(item.description);
+                        tvDescription.setVisibility(View.VISIBLE);
+                    } else {
+                        tvDescription.setVisibility(View.GONE);
+                    }
+                }
+
                 tvPrice.setText(String.format("₹%,.0f/day", item.price));
 
                 btnBook.setOnClickListener(v -> {

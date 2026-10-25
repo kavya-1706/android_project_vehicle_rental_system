@@ -387,7 +387,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Get all bookings (includes payments, feedback, users, vehicles)
     public Cursor getAllAdminRecords() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT b.*, u." + COLUMN_USERNAME + ", v." + COLUMN_VEHICLE_NAME + ", v." + COLUMN_VEHICLE_NUM
+        String query = "SELECT b.*, u." + COLUMN_USERNAME + ", u." + COLUMN_FIRST_NAME + ", u." + COLUMN_LAST_NAME + ", v." + COLUMN_VEHICLE_NAME + ", v." + COLUMN_BRAND + ", v." + COLUMN_MODEL + ", v." + COLUMN_VEHICLE_NUM + ", v." + COLUMN_PRICE_PER_DAY
                 + " FROM " + TABLE_BOOKINGS + " b"
                 + " JOIN " + TABLE_USERS + " u ON b." + COLUMN_BOOKING_USER_ID + " = u." + COLUMN_USER_ID
                 + " JOIN " + TABLE_VEHICLES + " v ON b." + COLUMN_BOOKING_VEHICLE_ID + " = v." + COLUMN_VEHICLE_ID

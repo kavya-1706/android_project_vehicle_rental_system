@@ -1,24 +1,20 @@
 package com.example.android_vehicle_project;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 public class AdminProfileActivity extends AppCompatActivity {
 
-    private ImageView ivBack;
-    private EditText etFirstName, etLastName, etEmail, etPhone, etAddress, etLicense;
-    private Button btnSaveProfile;
+    private TextView tvProfileName, tvProfileUsername, tvFirstName, tvLastName, tvPhone;
+    private Button btnLogoutProfile;
 
     private DatabaseHandler dbHandler;
-    
-    // In a real app, this would come from SharedPreferences upon Login.
-    // For this prototype, the default admin username is 'admin'.
     private final String CURRENT_ADMIN_USERNAME = "admin";
 
     @Override
@@ -26,63 +22,64 @@ public class AdminProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_profile);
 
+        Toolbar toolbar = findViewById(R.id.toolbarProfile);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+        toolbar.setNavigationOnClickListener(v -> finish());
+
         dbHandler = new DatabaseHandler(this);
 
         initViews();
         loadAdminProfile();
 
-        ivBack.setOnClickListener(v -> finish());
-        btnSaveProfile.setOnClickListener(v -> saveAdminProfile());
+        btnLogoutProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminProfileActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        });
     }
 
     private void initViews() {
-        ivBack = findViewById(R.id.ivBack);
-        
-        etFirstName = findViewById(R.id.etFirstName);
-        etLastName = findViewById(R.id.etLastName);
-        etEmail = findViewById(R.id.etEmail);
-        etPhone = findViewById(R.id.etPhone);
-        etAddress = findViewById(R.id.etAddress);
-        etLicense = findViewById(R.id.etLicense);
-        
-        btnSaveProfile = findViewById(R.id.btnSaveProfile);
+        tvProfileName = findViewById(R.id.tvProfileName);
+        tvProfileUsername = findViewById(R.id.tvProfileUsername);
+        tvFirstName = findViewById(R.id.tvFirstName);
+        tvLastName = findViewById(R.id.tvLastName);
+        tvPhone = findViewById(R.id.tvPhone);
+        btnLogoutProfile = findViewById(R.id.btnLogoutProfile);
     }
 
     private void loadAdminProfile() {
         Cursor cursor = dbHandler.getUserByUsername(CURRENT_ADMIN_USERNAME);
 
         if (cursor != null && cursor.moveToFirst()) {
-            etFirstName.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_FIRST_NAME)));
-            etLastName.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_LAST_NAME)));
-            etEmail.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_EMAIL)));
-            etPhone.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_PHONE)));
-            etAddress.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_ADDRESS)));
-            etLicense.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_LICENSE)));
+            int unameIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_USERNAME);
+            int fnameIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_FIRST_NAME);
+            int lnameIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_LAST_NAME);
+            int phoneIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_PHONE);
+
+            String uname = unameIdx != -1 ? cursor.getString(unameIdx) : CURRENT_ADMIN_USERNAME;
+            String fname = fnameIdx != -1 ? cursor.getString(fnameIdx) : "Admin";
+            String lname = lnameIdx != -1 ? cursor.getString(lnameIdx) : "System";
+            String phone = phoneIdx != -1 ? cursor.getString(phoneIdx) : "N/A";
+
+            tvProfileName.setText((fname + " " + lname).trim());
+            tvProfileUsername.setText("Username: " + uname);
+            tvFirstName.setText(fname);
+            tvLastName.setText(lname);
+            tvPhone.setText(phone);
+
             cursor.close();
-        }
-    }
-
-    private void saveAdminProfile() {
-        String fName = etFirstName.getText().toString().trim();
-        String lName = etLastName.getText().toString().trim();
-        String email = etEmail.getText().toString().trim();
-        String phone = etPhone.getText().toString().trim();
-        String address = etAddress.getText().toString().trim();
-        String license = etLicense.getText().toString().trim();
-
-        if (fName.isEmpty() || email.isEmpty() || phone.isEmpty()) {
-            Toast.makeText(this, "First Name, Email, and Phone are required", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // We use the existing updateUserProfile method
-        boolean success = dbHandler.updateUserProfile(CURRENT_ADMIN_USERNAME, fName, lName, email, phone, address, license);
-
-        if (success) {
-            Toast.makeText(this, "Admin Profile Updated Successfully!", Toast.LENGTH_SHORT).show();
-            finish(); // return to dashboard
         } else {
-            Toast.makeText(this, "Failed to update profile", Toast.LENGTH_SHORT).show();
+            if (cursor != null) cursor.close();
+            tvProfileName.setText("Admin System");
+            tvProfileUsername.setText("Username: " + CURRENT_ADMIN_USERNAME);
+            tvFirstName.setText("Admin");
+            tvLastName.setText("System");
+            tvPhone.setText("9999999999");
         }
     }
 }

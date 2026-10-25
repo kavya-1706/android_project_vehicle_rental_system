@@ -73,10 +73,10 @@ public class AdminManageUsersActivity extends AppCompatActivity {
     }
 
     private void deleteUser(int userId, int position) {
-        new AlertDialog.Builder(this)
+        AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Delete User")
                 .setMessage("Are you sure you want to completely remove this user account?")
-                .setPositiveButton("Delete", (dialog, which) -> {
+                .setPositiveButton("Delete", (dialogInterface, which) -> {
                     boolean deleted = dbHandler.deleteUser(userId);
                     if (deleted) {
                         Toast.makeText(this, "User deleted", Toast.LENGTH_SHORT).show();
@@ -87,7 +87,16 @@ public class AdminManageUsersActivity extends AppCompatActivity {
                     }
                 })
                 .setNegativeButton("Cancel", null)
-                .show();
+                .create();
+
+        dialog.show();
+
+        if (dialog.getButton(AlertDialog.BUTTON_POSITIVE) != null) {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.error_red));
+        }
+        if (dialog.getButton(AlertDialog.BUTTON_NEGATIVE) != null) {
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.white));
+        }
     }
 
     // ------------------ INNER CLASSES FOR RECYCLER VIEW ------------------ //
