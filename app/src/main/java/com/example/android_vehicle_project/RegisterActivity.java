@@ -110,6 +110,26 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
+        if (username.length() < 5) {
+            Toast.makeText(this, "Username must be at least 5 characters long", Toast.LENGTH_SHORT).show();
+            etRegUsername.requestFocus();
+            return;
+        }
+
+        if (!isValidPassword(password)) {
+            Toast.makeText(this, "Password must be at least 8 characters and include letters, numbers, and special characters", Toast.LENGTH_LONG).show();
+            etRegPassword.requestFocus();
+            return;
+        }
+
+        // DL validation: exactly 15 characters, valid Indian state code + 13 digits
+        String dlPattern = "^(?i)(AN|AP|AR|AS|BR|CH|CG|DD|DL|GA|GJ|HR|HP|JK|JH|KA|KL|LA|LD|MP|MH|MN|ML|MZ|NL|OD|OR|PY|PB|RJ|SK|TN|TS|TR|UP|UK|UA|WB)[0-9]{13}$";
+        if (!license.matches(dlPattern)) {
+            Toast.makeText(this, "Driving License must be a valid 15-character Indian DL (e.g. KA1234567890123 with a valid state code)", Toast.LENGTH_LONG).show();
+            etLicense.requestFocus();
+            return;
+        }
+
         SharedPreferences prefs = getSharedPreferences("RideRentPrefs", MODE_PRIVATE);
         DatabaseHandler dbHandler = new DatabaseHandler(this);
 
@@ -139,5 +159,24 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(this, "Failed to register account in database. Saved locally.", Toast.LENGTH_LONG).show();
         }
         finish();
+    }
+
+    private boolean isValidPassword(String password) {
+        if (password.length() < 8) return false;
+        boolean hasLetter = false;
+        boolean hasDigit = false;
+        boolean hasSpecial = false;
+
+        for (int i = 0; i < password.length(); i++) {
+            char c = password.charAt(i);
+            if (Character.isLetter(c)) {
+                hasLetter = true;
+            } else if (Character.isDigit(c)) {
+                hasDigit = true;
+            } else {
+                hasSpecial = true;
+            }
+        }
+        return hasLetter && hasDigit && hasSpecial;
     }
 }

@@ -95,37 +95,58 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Search Field -->
-            <RelativeLayout
+            <!-- Search & Filter Row -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="@drawable/bg_input"
-                android:paddingHorizontal="12dp">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_input"
+                    android:paddingHorizontal="12dp">
+
+                    <ImageView
+                        android:id="@+id/ivSearchIcon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:contentDescription="@string/search_vehicles"
+                        android:src="@drawable/ic_search" />
+
+                    <EditText
+                        android:id="@+id/etSearchVehicle"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_toEndOf="@id/ivSearchIcon"
+                        android:autofillHints="name"
+                        android:background="@null"
+                        android:hint="@string/search_vehicles"
+                        android:imeOptions="actionSearch"
+                        android:inputType="text"
+                        android:paddingEnd="12dp"
+                        android:paddingStart="12dp"
+                        android:textColor="@color/text_dark"
+                        android:textSize="14sp" />
+                </RelativeLayout>
 
                 <ImageView
-                    android:id="@+id/ivSearchIcon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:contentDescription="@string/search_vehicles"
-                    android:src="@drawable/ic_search" />
-
-                <EditText
-                    android:id="@+id/etSearchVehicle"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_toEndOf="@id/ivSearchIcon"
-                    android:autofillHints="name"
-                    android:background="@null"
-                    android:hint="@string/search_vehicles"
-                    android:imeOptions="actionSearch"
-                    android:inputType="text"
-                    android:paddingEnd="12dp"
-                    android:paddingStart="12dp"
-                    android:textColor="@color/text_dark"
-                    android:textSize="14sp" />
-            </RelativeLayout>
+                    android:id="@+id/ivFilterButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_input"
+                    android:clickable="true"
+                    android:contentDescription="Filter Vehicles"
+                    android:focusable="true"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_filter"
+                    app:tint="@color/primary_navy" />
+            </LinearLayout>
 
             <Space
                 android:layout_width="match_parent"

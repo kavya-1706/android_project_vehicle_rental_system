@@ -257,16 +257,25 @@ public class BookingActivity extends AppCompatActivity {
     }
 
     private void showTermsDialog() {
-        new AlertDialog.Builder(this)
+        AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Rental Terms & Conditions")
                 .setMessage("1. Driver Requirements:\nMust be at least 21 years of age with a valid, unexpired Driving Licence.\n\n" +
                         "2. Operating Hours:\nVehicle pick-up and drop hours are strictly between 9:00 AM and 5:00 PM. Please collect and return the vehicle within operating hours.\n\n" +
                         "3. Fuel Policy:\nThe vehicle must be returned with the same fuel level as recorded during pick-up.\n\n" +
                         "4. Overdue Policy:\nLate returns beyond agreed drop date will incur extra charges.\n\n" +
-                        "5. Safety & Care:\nTraffic violations, toll fees, or physical damage incurred during rental period are customer responsibility.")
-                .setPositiveButton("I Agree", (dialog, which) -> cbTerms.setChecked(true))
+                        "5. Safety & Care:\nTraffic violations, toll fees, or physical damage incurred during rental period are customer responsibility.\n\n" +
+                        "6. Cancellation Policy:\nBookings can be cancelled only if there is at least 2 days left before the booking start date.")
+                .setPositiveButton("I Agree", (d, which) -> cbTerms.setChecked(true))
                 .setNegativeButton("Close", null)
-                .show();
+                .create();
+
+        dialog.show();
+        if (dialog.getButton(AlertDialog.BUTTON_POSITIVE) != null) {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(android.graphics.Color.WHITE);
+        }
+        if (dialog.getButton(AlertDialog.BUTTON_NEGATIVE) != null) {
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(android.graphics.Color.WHITE);
+        }
     }
 
     private void handleBookingConfirmation() {

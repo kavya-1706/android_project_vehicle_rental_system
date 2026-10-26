@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "RideRent.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     // Table Names
     public static final String TABLE_USERS = "users";
@@ -133,49 +133,75 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     private void seedInitialData(SQLiteDatabase db) {
-        // Seed Admin user
-        ContentValues adminValues = new ContentValues();
-        adminValues.put(COLUMN_FIRST_NAME, "Admin");
-        adminValues.put(COLUMN_LAST_NAME, "System");
-        adminValues.put(COLUMN_EMAIL, "admin@riderent.com");
-        adminValues.put(COLUMN_DOB, "01 / 01 / 1990");
-        adminValues.put(COLUMN_PHONE, "9999999999");
-        adminValues.put(COLUMN_ADDRESS, "Headquarters, Bangalore");
-        adminValues.put(COLUMN_LICENSE, "ADMIN000111222");
-        adminValues.put(COLUMN_USERNAME, "admin");
-        adminValues.put(COLUMN_PASSWORD, "admin");
-        adminValues.put(COLUMN_ROLE, "admin");
-        db.insert(TABLE_USERS, null, adminValues);
+        // Seed Admin 1: admin1 / admin1
+        ContentValues admin1 = new ContentValues();
+        admin1.put(COLUMN_FIRST_NAME, "Admin");
+        admin1.put(COLUMN_LAST_NAME, "One");
+        admin1.put(COLUMN_EMAIL, "admin1@riderent.com");
+        admin1.put(COLUMN_DOB, "01 / 01 / 1990");
+        admin1.put(COLUMN_PHONE, "9999999991");
+        admin1.put(COLUMN_ADDRESS, "Headquarters, Bangalore");
+        admin1.put(COLUMN_LICENSE, "ADMIN0001");
+        admin1.put(COLUMN_USERNAME, "admin1");
+        admin1.put(COLUMN_PASSWORD, "admin1");
+        admin1.put(COLUMN_ROLE, "admin");
+        db.insert(TABLE_USERS, null, admin1);
 
+        // Seed Admin 2: admin2 / admin2
+        ContentValues admin2 = new ContentValues();
+        admin2.put(COLUMN_FIRST_NAME, "Admin");
+        admin2.put(COLUMN_LAST_NAME, "Two");
+        admin2.put(COLUMN_EMAIL, "admin2@riderent.com");
+        admin2.put(COLUMN_DOB, "02 / 02 / 1991");
+        admin2.put(COLUMN_PHONE, "9999999992");
+        admin2.put(COLUMN_ADDRESS, "Branch Office, Bangalore");
+        admin2.put(COLUMN_LICENSE, "ADMIN0002");
+        admin2.put(COLUMN_USERNAME, "admin2");
+        admin2.put(COLUMN_PASSWORD, "admin2");
+        admin2.put(COLUMN_ROLE, "admin");
+        db.insert(TABLE_USERS, null, admin2);
 
+        // Seed Customer 1: ananya18 / ananya_18
+        ContentValues cust1 = new ContentValues();
+        cust1.put(COLUMN_FIRST_NAME, "Ananya");
+        cust1.put(COLUMN_LAST_NAME, "Sharma");
+        cust1.put(COLUMN_EMAIL, "ananya@email.com");
+        cust1.put(COLUMN_DOB, "12 / 05 / 2000");
+        cust1.put(COLUMN_PHONE, "9876543210");
+        cust1.put(COLUMN_ADDRESS, "MG Road, Bangalore");
+        cust1.put(COLUMN_LICENSE, "KA01 20230099880");
+        cust1.put(COLUMN_USERNAME, "ananya18");
+        cust1.put(COLUMN_PASSWORD, "ananya_18");
+        cust1.put(COLUMN_ROLE, "customer");
+        long cust1Id = db.insert(TABLE_USERS, null, cust1);
 
-        // Seed Customer user (priya / 123456)
-        ContentValues priyaValues = new ContentValues();
-        priyaValues.put(COLUMN_FIRST_NAME, "Priya");
-        priyaValues.put(COLUMN_LAST_NAME, "Sharma");
-        priyaValues.put(COLUMN_EMAIL, "priya.sharma@email.com");
-        priyaValues.put(COLUMN_DOB, "15 / 08 / 1998");
-        priyaValues.put(COLUMN_PHONE, "9876543211");
-        priyaValues.put(COLUMN_ADDRESS, "MG Road, Bangalore");
-        priyaValues.put(COLUMN_LICENSE, "KA01 20230099888");
-        priyaValues.put(COLUMN_USERNAME, "priya");
-        priyaValues.put(COLUMN_PASSWORD, "123456");
-        priyaValues.put(COLUMN_ROLE, "customer");
-        long priyaUserId = db.insert(TABLE_USERS, null, priyaValues);
+        // Seed Customer 2: pranav2020 / pranav@20
+        ContentValues cust2 = new ContentValues();
+        cust2.put(COLUMN_FIRST_NAME, "Pranav");
+        cust2.put(COLUMN_LAST_NAME, "Rao");
+        cust2.put(COLUMN_EMAIL, "pranav@email.com");
+        cust2.put(COLUMN_DOB, "20 / 10 / 1999");
+        cust2.put(COLUMN_PHONE, "9876543211");
+        cust2.put(COLUMN_ADDRESS, "Koramangala, Bangalore");
+        cust2.put(COLUMN_LICENSE, "KA01 20230099881");
+        cust2.put(COLUMN_USERNAME, "pranav2020");
+        cust2.put(COLUMN_PASSWORD, "pranav@20");
+        cust2.put(COLUMN_ROLE, "customer");
+        long cust2Id = db.insert(TABLE_USERS, null, cust2);
 
-        // Seed Customer user (k / k)
-        ContentValues kValues = new ContentValues();
-        kValues.put(COLUMN_FIRST_NAME, "K");
-        kValues.put(COLUMN_LAST_NAME, "Kumar");
-        kValues.put(COLUMN_EMAIL, "k.kumar@email.com");
-        kValues.put(COLUMN_DOB, "01 / 01 / 2000");
-        kValues.put(COLUMN_PHONE, "9876543212");
-        kValues.put(COLUMN_ADDRESS, "Indiranagar, Bangalore");
-        kValues.put(COLUMN_LICENSE, "KA01 20230099889");
-        kValues.put(COLUMN_USERNAME, "k");
-        kValues.put(COLUMN_PASSWORD, "k");
-        kValues.put(COLUMN_ROLE, "customer");
-        long kUserId = db.insert(TABLE_USERS, null, kValues);
+        // Seed Customer 3: rosie45 / rosie_45
+        ContentValues cust3 = new ContentValues();
+        cust3.put(COLUMN_FIRST_NAME, "Rosie");
+        cust3.put(COLUMN_LAST_NAME, "DSouza");
+        cust3.put(COLUMN_EMAIL, "rosie@email.com");
+        cust3.put(COLUMN_DOB, "05 / 07 / 2001");
+        cust3.put(COLUMN_PHONE, "9876543212");
+        cust3.put(COLUMN_ADDRESS, "Indiranagar, Bangalore");
+        cust3.put(COLUMN_LICENSE, "KA01 20230099882");
+        cust3.put(COLUMN_USERNAME, "rosie45");
+        cust3.put(COLUMN_PASSWORD, "rosie_45");
+        cust3.put(COLUMN_ROLE, "customer");
+        long cust3Id = db.insert(TABLE_USERS, null, cust3);
 
         // Seed Sample Vehicles
         ContentValues vehicle1 = new ContentValues();
@@ -212,39 +238,56 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         vehicle3.put(COLUMN_PRICE_PER_DAY, 3200.00);
         vehicle3.put(COLUMN_DESCRIPTION, "4x4 Off-road SUV for outdoor adventures");
         vehicle3.put(COLUMN_VEHICLE_STATUS, "available");
-        db.insert(TABLE_VEHICLES, null, vehicle3);
+        long vehicle3Id = db.insert(TABLE_VEHICLES, null, vehicle3);
 
-        // Seed Sample Booking for user "priya"
-        ContentValues priyaBooking = new ContentValues();
-        priyaBooking.put(COLUMN_BOOKING_USER_ID, priyaUserId);
-        priyaBooking.put(COLUMN_BOOKING_VEHICLE_ID, vehicle2Id);
-        priyaBooking.put(COLUMN_PICKUP_DATE, "2026-10-15");
-        priyaBooking.put(COLUMN_DROP_DATE, "2026-10-17");
-        priyaBooking.put(COLUMN_TOTAL_DAYS, 2);
-        priyaBooking.put(COLUMN_TOTAL_AMOUNT, 1400.00);
-        priyaBooking.put(COLUMN_BOOKING_STATUS, "ongoing");
-        priyaBooking.put(COLUMN_PAYMENT_STATUS, "success");
-        priyaBooking.put(COLUMN_PAYMENT_TIME, "14:15:00");
-        priyaBooking.put(COLUMN_FEEDBACK, "Great car, very clean!");
-        priyaBooking.put(COLUMN_RATING, 4.5);
-        priyaBooking.put(COLUMN_LATE_FINE, 0.0);
-        db.insert(TABLE_BOOKINGS, null, priyaBooking);
+        // Seed Sample Bookings for Customers
+        // 1. Booking for ananya18 (Honda City)
+        ContentValues booking1 = new ContentValues();
+        booking1.put(COLUMN_BOOKING_USER_ID, cust1Id);
+        booking1.put(COLUMN_BOOKING_VEHICLE_ID, vehicle1Id);
+        booking1.put(COLUMN_PICKUP_DATE, "2026-10-15");
+        booking1.put(COLUMN_DROP_DATE, "2026-10-18");
+        booking1.put(COLUMN_TOTAL_DAYS, 4);
+        booking1.put(COLUMN_TOTAL_AMOUNT, 7200.00);
+        booking1.put(COLUMN_BOOKING_STATUS, "completed");
+        booking1.put(COLUMN_PAYMENT_STATUS, "success");
+        booking1.put(COLUMN_PAYMENT_TIME, "11:00:00");
+        booking1.put(COLUMN_FEEDBACK, "Amazing experience!");
+        booking1.put(COLUMN_RATING, 5.0);
+        booking1.put(COLUMN_LATE_FINE, 0.0);
+        db.insert(TABLE_BOOKINGS, null, booking1);
 
-        // Seed Sample Booking for user "k"
-        ContentValues kBooking = new ContentValues();
-        kBooking.put(COLUMN_BOOKING_USER_ID, kUserId);
-        kBooking.put(COLUMN_BOOKING_VEHICLE_ID, vehicle1Id);
-        kBooking.put(COLUMN_PICKUP_DATE, "2026-10-20");
-        kBooking.put(COLUMN_DROP_DATE, "2026-10-23");
-        kBooking.put(COLUMN_TOTAL_DAYS, 3);
-        kBooking.put(COLUMN_TOTAL_AMOUNT, 5400.00);
-        kBooking.put(COLUMN_BOOKING_STATUS, "upcoming");
-        kBooking.put(COLUMN_PAYMENT_STATUS, "success");
-        kBooking.put(COLUMN_PAYMENT_TIME, "10:30:00");
-        kBooking.put(COLUMN_FEEDBACK, "");
-        kBooking.put(COLUMN_RATING, 0.0);
-        kBooking.put(COLUMN_LATE_FINE, 0.0);
-        db.insert(TABLE_BOOKINGS, null, kBooking);
+        // 2. Booking for pranav2020 (Royal Enfield)
+        ContentValues booking2 = new ContentValues();
+        booking2.put(COLUMN_BOOKING_USER_ID, cust2Id);
+        booking2.put(COLUMN_BOOKING_VEHICLE_ID, vehicle2Id);
+        booking2.put(COLUMN_PICKUP_DATE, "2026-10-20");
+        booking2.put(COLUMN_DROP_DATE, "2026-10-22");
+        booking2.put(COLUMN_TOTAL_DAYS, 3);
+        booking2.put(COLUMN_TOTAL_AMOUNT, 2100.00);
+        booking2.put(COLUMN_BOOKING_STATUS, "ongoing");
+        booking2.put(COLUMN_PAYMENT_STATUS, "success");
+        booking2.put(COLUMN_PAYMENT_TIME, "14:30:00");
+        booking2.put(COLUMN_FEEDBACK, "Bike was in great condition.");
+        booking2.put(COLUMN_RATING, 4.5);
+        booking2.put(COLUMN_LATE_FINE, 0.0);
+        db.insert(TABLE_BOOKINGS, null, booking2);
+
+        // 3. Booking for rosie45 (Mahindra Thar)
+        ContentValues booking3 = new ContentValues();
+        booking3.put(COLUMN_BOOKING_USER_ID, cust3Id);
+        booking3.put(COLUMN_BOOKING_VEHICLE_ID, vehicle3Id);
+        booking3.put(COLUMN_PICKUP_DATE, "2026-10-28");
+        booking3.put(COLUMN_DROP_DATE, "2026-10-31");
+        booking3.put(COLUMN_TOTAL_DAYS, 4);
+        booking3.put(COLUMN_TOTAL_AMOUNT, 12800.00);
+        booking3.put(COLUMN_BOOKING_STATUS, "upcoming");
+        booking3.put(COLUMN_PAYMENT_STATUS, "success");
+        booking3.put(COLUMN_PAYMENT_TIME, "09:15:00");
+        booking3.put(COLUMN_FEEDBACK, "");
+        booking3.put(COLUMN_RATING, 0.0);
+        booking3.put(COLUMN_LATE_FINE, 0.0);
+        db.insert(TABLE_BOOKINGS, null, booking3);
     }
 
     // Helper: Authenticate user credentials with specific role
@@ -514,6 +557,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return count;
     }
+
+    // Delete a booking
+    public boolean deleteBooking(int bookingId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rows = db.delete(TABLE_BOOKINGS, COLUMN_BOOKING_ID + " = ?", new String[]{String.valueOf(bookingId)});
+        return rows > 0;
+    }
 }
-
-

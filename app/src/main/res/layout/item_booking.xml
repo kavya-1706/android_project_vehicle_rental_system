@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardBookingItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -112,5 +113,19 @@
         android:layout_marginTop="8dp"
         android:textColor="@color/text_gray"
         android:textSize="12sp" />
+
+    <!-- Cancel Booking Button -->
+    <Button
+        android:id="@+id/btnCancelBooking"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_cancel_button"
+        android:text="CANCEL BOOKING"
+        android:textColor="@color/error_red"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:backgroundTint="@null" />
 
 </LinearLayout>

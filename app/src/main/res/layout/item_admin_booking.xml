@@ -28,10 +28,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:background="@drawable/bg_input"
+            android:background="@drawable/bg_button"
             android:paddingHorizontal="10dp"
             android:paddingVertical="4dp"
-            android:textColor="@color/text_dark"
+            android:textColor="@color/white"
             android:textSize="12sp"
             android:textStyle="bold" />
     </RelativeLayout>

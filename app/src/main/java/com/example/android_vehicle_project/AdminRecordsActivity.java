@@ -76,7 +76,6 @@ public class AdminRecordsActivity extends AppCompatActivity {
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 int bookingId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_BOOKING_ID));
-                String status = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_BOOKING_STATUS));
                 String username = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_USERNAME));
 
                 int fnameIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_FIRST_NAME);
@@ -96,6 +95,7 @@ public class AdminRecordsActivity extends AppCompatActivity {
                 String vehicleNum = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_VEHICLE_NUM));
                 String pickup = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_PICKUP_DATE));
                 String drop = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHandler.COLUMN_DROP_DATE));
+                String status = BookingUtils.calculateStatus(pickup, drop);
 
                 int daysIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_TOTAL_DAYS);
                 int amountIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_TOTAL_AMOUNT);
@@ -181,13 +181,6 @@ public class AdminRecordsActivity extends AppCompatActivity {
             holder.tvTotalAmount.setText(String.format("₹%,.0f", record.totalAmount));
 
             holder.tvStatusTag.setText(record.status.toUpperCase());
-            if (record.status.equalsIgnoreCase("completed")) {
-                holder.tvStatusTag.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-            } else if (record.status.equalsIgnoreCase("ongoing")) {
-                holder.tvStatusTag.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
-            } else {
-                holder.tvStatusTag.setTextColor(getResources().getColor(R.color.button_orange));
-            }
 
             holder.tvPaymentStatus.setText("Payment: " + record.paymentStatus.toUpperCase()
                     + (record.paymentTime.isEmpty() ? "" : " at " + record.paymentTime));

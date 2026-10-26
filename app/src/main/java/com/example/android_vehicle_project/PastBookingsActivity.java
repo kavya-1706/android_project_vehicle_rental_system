@@ -47,6 +47,7 @@ public class PastBookingsActivity extends AppCompatActivity {
             LayoutInflater inflater = LayoutInflater.from(this);
 
             while (cursor.moveToNext()) {
+                int bookingIdIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_BOOKING_ID);
                 int vehicleNameIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_VEHICLE_NAME);
                 int brandIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_BRAND);
                 int modelIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_MODEL);
@@ -54,10 +55,10 @@ public class PastBookingsActivity extends AppCompatActivity {
                 int dropIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_DROP_DATE);
                 int daysIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_TOTAL_DAYS);
                 int amountIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_TOTAL_AMOUNT);
-                int statusIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_BOOKING_STATUS);
                 int paymentIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_PAYMENT_STATUS);
                 int payTimeIdx = cursor.getColumnIndex(DatabaseHandler.COLUMN_PAYMENT_TIME);
 
+                int bookingId = bookingIdIdx != -1 ? cursor.getInt(bookingIdIdx) : -1;
                 String vehicleName = vehicleNameIdx != -1 ? cursor.getString(vehicleNameIdx) : "Vehicle";
                 String brand = brandIdx != -1 ? cursor.getString(brandIdx) : "";
                 String model = modelIdx != -1 ? cursor.getString(modelIdx) : "";
@@ -65,7 +66,7 @@ public class PastBookingsActivity extends AppCompatActivity {
                 String dropDate = dropIdx != -1 ? cursor.getString(dropIdx) : "";
                 int totalDays = daysIdx != -1 ? cursor.getInt(daysIdx) : 1;
                 double totalAmount = amountIdx != -1 ? cursor.getDouble(amountIdx) : 0.0;
-                String bookingStatus = statusIdx != -1 ? cursor.getString(statusIdx) : "completed";
+                String bookingStatus = BookingUtils.calculateStatus(pickupDate, dropDate);
                 String paymentStatus = paymentIdx != -1 ? cursor.getString(paymentIdx) : "success";
                 String paymentTime = payTimeIdx != -1 ? cursor.getString(payTimeIdx) : "";
 
@@ -77,6 +78,7 @@ public class PastBookingsActivity extends AppCompatActivity {
                 TextView tvDates = cardView.findViewById(R.id.tvBookingDates);
                 TextView tvAmount = cardView.findViewById(R.id.tvBookingTotalAmount);
                 TextView tvPayment = cardView.findViewById(R.id.tvPaymentStatus);
+                android.widget.Button btnCancelBooking = cardView.findViewById(R.id.btnCancelBooking);
 
                 tvVehicleName.setText(vehicleName);
                 tvBrand.setText(brand + " " + model);
@@ -84,6 +86,35 @@ public class PastBookingsActivity extends AppCompatActivity {
                 tvAmount.setText(String.format("₹%,.0f", totalAmount));
                 tvStatus.setText(bookingStatus.toUpperCase());
                 tvPayment.setText("Payment Status: " + paymentStatus.toUpperCase() + (paymentTime.isEmpty() ? "" : " at " + paymentTime));
+
+                if (bookingStatus.equals("upcoming") && BookingUtils.canCancelBooking(pickupDate)) {
+                    btnCancelBooking.setVisibility(View.VISIBLE);
+                    btnCancelBooking.setOnClickListener(v -> {
+                        androidx.appcompat.app.AlertDialog cancelDialog = new androidx.appcompat.app.AlertDialog.Builder(this)
+                                .setTitle("Cancel Booking")
+                                .setMessage("Are you sure you want to cancel this booking?")
+                                .setPositiveButton("Yes, Cancel", (dialog, which) -> {
+                                    boolean deleted = dbHandler.deleteBooking(bookingId);
+                                    if (deleted) {
+                                        android.widget.Toast.makeText(this, "Booking cancelled successfully", android.widget.Toast.LENGTH_SHORT).show();
+                                        loadCustomerBookings();
+                                    } else {
+                                        android.widget.Toast.makeText(this, "Failed to cancel booking", android.widget.Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .setNegativeButton("No", null)
+                                .create();
+                        cancelDialog.show();
+                        if (cancelDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE) != null) {
+                            cancelDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setTextColor(android.graphics.Color.WHITE);
+                        }
+                        if (cancelDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE) != null) {
+                            cancelDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(android.graphics.Color.WHITE);
+                        }
+                    });
+                } else {
+                    btnCancelBooking.setVisibility(View.GONE);
+                }
 
                 llBookingsContainer.addView(cardView);
             }
