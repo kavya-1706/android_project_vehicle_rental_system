@@ -14,31 +14,41 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * MainActivity serves as the main entry point and Customer Login Screen.
+ * It allows customers to enter credentials, toggle password visibility, navigate to Registration,
+ * switch to Admin Login, or authenticate and proceed to CustomerHomeActivity.
+ */
 public class MainActivity extends AppCompatActivity {
 
+    // UI View Declarations
     private EditText etUsername, etPassword;
     private ImageView ivTogglePassword;
     private Button btnLogin, btnLoginAsAdmin;
-    // private TextView tvForgotPassword;
     private TextView tvRegister;
     private ScrollView scrollViewMain;
+
+    // Password visibility flag
     private boolean isPasswordVisible = false;
 
+    /**
+     * Initializes UI layout, view bindings, focus listeners, and click handlers on Activity launch.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Bind layout views
         scrollViewMain = findViewById(R.id.scrollViewMain);
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         ivTogglePassword = findViewById(R.id.ivTogglePassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnLoginAsAdmin = findViewById(R.id.btnLoginAsAdmin);
-        //tvForgotPassword = findViewById(R.id.tvForgotPassword);
         tvRegister = findViewById(R.id.tvRegister);
 
-        // Auto-scroll focused input fields above soft keyboard
+        // Auto-scroll focus listener ensuring focused input field stays visible above the soft keyboard
         View.OnFocusChangeListener autoScrollFocusListener = (v, hasFocus) -> {
             if (hasFocus && scrollViewMain != null) {
                 scrollViewMain.postDelayed(() -> {
@@ -50,46 +60,45 @@ public class MainActivity extends AppCompatActivity {
         etUsername.setOnFocusChangeListener(autoScrollFocusListener);
         etPassword.setOnFocusChangeListener(autoScrollFocusListener);
 
-        // Password visibility toggle
+        // Password visibility toggle handler
         ivTogglePassword.setOnClickListener(v -> {
             if (isPasswordVisible) {
+                // Hide password into dots
                 etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 isPasswordVisible = false;
             } else {
+                // Show plain text password
                 etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                 isPasswordVisible = true;
             }
+            // Keep cursor at the end of input
             etPassword.setSelection(etPassword.getText().length());
         });
 
-        // Register link
+        // Navigate to Customer Registration screen
         tvRegister.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
             startActivity(intent);
         });
 
-        // Forgot password link
-//        tvForgotPassword.setOnClickListener(v -> {
-//            Toast.makeText(MainActivity.this, "Please contact the administrator to reset your password", Toast.LENGTH_LONG).show();
-//        });
-
-        // Login as Admin button
+        // Navigate to Admin Login screen
         btnLoginAsAdmin.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, AdminLoginActivity.class);
             startActivity(intent);
         });
 
-        // Customer Login button
+        // Handle Customer Login authentication
         btnLogin.setOnClickListener(v -> {
             String username = etUsername.getText().toString().trim();
             String password = etPassword.getText().toString().trim();
 
+            // Validate non-empty inputs
             if (username.isEmpty() || password.isEmpty()) {
                 Toast.makeText(MainActivity.this, "Please enter username and password", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Check database credentials
+            // Authenticate against SQLite Database
             DatabaseHandler dbHandler = new DatabaseHandler(MainActivity.this);
             if (dbHandler.checkUserCredentials(username, password, "customer")) {
                 String firstName = "Customer";
@@ -110,10 +119,10 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            // Fallback for SharedPreferences or demo accounts
+            // Fallback check against SharedPreferences or demo accounts
             SharedPreferences prefs = getSharedPreferences("RideRentPrefs", MODE_PRIVATE);
 
-            // Default demo customer
+            // Default demo customer fallback
             if ((username.equals("abcd") && password.equals("abcd")) || (username.equals("priya") && password.equals("123456"))) {
                 Toast.makeText(MainActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this, CustomerHomeActivity.class);
@@ -124,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            // Check registered users in SharedPreferences
+            // Check registered users stored in SharedPreferences
             String savedPassword = prefs.getString("pwd_" + username, null);
             if (savedPassword != null && savedPassword.equals(password)) {
                 String firstName = prefs.getString("fname_" + username, "Customer");

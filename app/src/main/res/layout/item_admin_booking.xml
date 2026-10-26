@@ -123,4 +123,14 @@
         android:textColor="@color/text_gray"
         android:textSize="12sp" />
 
+    <!-- Admin Feedback Row -->
+    <TextView
+        android:id="@+id/tvAdminFeedback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textColor="@color/primary_navy"
+        android:textSize="12sp"
+        android:textStyle="italic" />
+
 </LinearLayout>

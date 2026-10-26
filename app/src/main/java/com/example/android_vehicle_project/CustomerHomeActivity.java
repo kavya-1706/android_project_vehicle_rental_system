@@ -20,8 +20,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * CustomerHomeActivity serves as the main dashboard for authenticated customers.
+ * Features:
+ * 1. Top Toolbar with Greeting, Top-Left Menu (Home & Terms), Profile link, and Logout action.
+ * 2. Real-time text search and multi-criteria filter dialog (Seats, Fuel, Max Price).
+ * 3. Dynamic vehicle card list loaded from SQLite with auto-detected 2-wheeler / car icons.
+ * 4. System status bar push notification trigger for 1-day advance booking reminders.
+ * 5. Bottom navigation (Home, Past Bookings, Profile).
+ */
 public class CustomerHomeActivity extends AppCompatActivity {
 
+    // UI View References
     private String username, firstName;
     private TextView tvGreeting;
     private EditText etSearchVehicle;
@@ -29,9 +39,18 @@ public class CustomerHomeActivity extends AppCompatActivity {
     private LinearLayout navHome, navPast, navProfile;
     private ImageView ivProfileIcon;
 
+    // Database helper & cached vehicle items
     private DatabaseHandler dbHandler;
     private List<VehicleItem> vehicleList = new ArrayList<>();
 
+    // Active filter state variables
+    private int filterSeats = 0; // 0 = Any
+    private String filterFuel = "all"; // "all", "petrol", "diesel"
+    private double filterMaxPrice = 0.0; // 0.0 = Any
+
+    /**
+     * Data holder representing a vehicle record for UI binding and client-side filtering.
+     */
     private static class VehicleItem {
         int id;
         String name;
@@ -55,6 +74,10 @@ public class CustomerHomeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Activity lifecycle callback initializes database helper, view bindings, click listeners,
+     * dynamic vehicle loading, system push notification checks, and real-time search filtering.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,15 +85,18 @@ public class CustomerHomeActivity extends AppCompatActivity {
 
         dbHandler = new DatabaseHandler(this);
 
+        // Extract logged-in customer credentials
         username = getIntent().getStringExtra("USERNAME");
         firstName = getIntent().getStringExtra("FIRST_NAME");
         if (firstName == null || firstName.isEmpty()) {
             firstName = "Priya";
         }
 
+        // Set customer greeting in toolbar header
         tvGreeting = findViewById(R.id.tvGreeting);
         tvGreeting.setText(getString(R.string.customer_home_greeting, firstName));
 
+        // Bind toolbar and layout components
         ivProfileIcon = findViewById(R.id.ivProfileIcon);
         ImageView ivLogoutIcon = findViewById(R.id.ivLogoutIcon);
         ImageView ivMenuIcon = findViewById(R.id.ivMenuIcon);
@@ -82,21 +108,21 @@ public class CustomerHomeActivity extends AppCompatActivity {
         navPast = findViewById(R.id.navPast);
         navProfile = findViewById(R.id.navProfile);
 
-        // Menu icon listener
+        // Top-left menu icon click handler
         if (ivMenuIcon != null) {
             ivMenuIcon.setOnClickListener(v -> showTopMenu());
         }
 
-        // Filter button listener
+        // Search filter button click handler
         if (ivFilterButton != null) {
             ivFilterButton.setOnClickListener(v -> showFilterDialog());
         }
 
-        // Profile navigation / icon
+        // Profile navigation handlers
         ivProfileIcon.setOnClickListener(v -> openProfile());
         navProfile.setOnClickListener(v -> openProfile());
 
-        // Logout icon navigation
+        // Logout icon handler (clears activity task stack)
         ivLogoutIcon.setOnClickListener(v -> {
             Intent intent = new Intent(CustomerHomeActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -104,25 +130,25 @@ public class CustomerHomeActivity extends AppCompatActivity {
             finish();
         });
 
-        // Past navigation
+        // Past Bookings navigation handler
         navPast.setOnClickListener(v -> {
             Intent intent = new Intent(CustomerHomeActivity.this, PastBookingsActivity.class);
             intent.putExtra("USERNAME", username);
             startActivity(intent);
         });
 
-        // Home navigation
+        // Home navigation handler
         navHome.setOnClickListener(v -> {
-            // Already home
+            // Already on home screen
         });
 
-        // Load vehicles dynamically from SQLite DB
+        // Load available vehicles dynamically from SQLite database
         loadVehiclesFromDatabase();
 
-        // Check and send booking reminder notifications
+        // Check for 1-day advance pickup/drop reminders and send system push notifications
         BookingUtils.checkBookingReminders(this, username);
 
-        // Search filter
+        // Real-time text search filter listener
         etSearchVehicle.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -137,24 +163,30 @@ public class CustomerHomeActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Navigates to CustomerProfileActivity.
+     */
     private void openProfile() {
         Intent intent = new Intent(CustomerHomeActivity.this, CustomerProfileActivity.class);
         intent.putExtra("USERNAME", username);
         startActivity(intent);
     }
 
+    /**
+     * Displays top-left customer popup menu offering Home refresh and Rental Terms dialog options.
+     */
     private void showTopMenu() {
         String[] options = {"Home", "Terms & Conditions"};
         androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Customer Menu")
                 .setItems(options, (d, which) -> {
                     if (which == 0) {
-                        // Home: Reset search & reload
+                        // Reset search & reload vehicles
                         etSearchVehicle.setText("");
                         loadVehiclesFromDatabase();
                         Toast.makeText(this, "Refreshed Home screen", Toast.LENGTH_SHORT).show();
                     } else if (which == 1) {
-                        // Terms & Conditions
+                        // Display rental terms dialog
                         showTermsAndConditions();
                     }
                 })
@@ -166,6 +198,9 @@ public class CustomerHomeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Displays full Rental Terms & Conditions alert dialog.
+     */
     private void showTermsAndConditions() {
         androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Rental Terms & Conditions")
@@ -183,6 +218,9 @@ public class CustomerHomeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Queries available vehicles from SQLite database and inflates item_vehicle.xml cards dynamically into container.
+     */
     private void loadVehiclesFromDatabase() {
         llVehicleContainer.removeAllViews();
         vehicleList.clear();
@@ -219,6 +257,7 @@ public class CustomerHomeActivity extends AppCompatActivity {
                 TextView tvPrice = view.findViewById(R.id.tvVehiclePrice);
                 Button btnBook = view.findViewById(R.id.btnBookVehicle);
 
+                // Auto-detect vehicle icon (bike icon for <= 2 seats, car icon for > 2 seats)
                 if (ivVehicleIcon != null) {
                     if (item.seats <= 2) {
                         ivVehicleIcon.setImageResource(R.drawable.ic_bike);
@@ -242,6 +281,7 @@ public class CustomerHomeActivity extends AppCompatActivity {
 
                 tvPrice.setText(String.format("₹%,.0f/day", item.price));
 
+                // Book button click launches BookingActivity
                 btnBook.setOnClickListener(v -> {
                     Intent intent = new Intent(CustomerHomeActivity.this, BookingActivity.class);
                     intent.putExtra("USERNAME", username);
@@ -261,12 +301,11 @@ public class CustomerHomeActivity extends AppCompatActivity {
         }
     }
 
-    private int filterSeats = 0; // 0 = Any
-    private String filterFuel = "all"; // "all", "petrol", "diesel"
-    private double filterMaxPrice = 0.0; // 0.0 = Any
-
+    /**
+     * Opens filter options dialog for filtering vehicles by Seats, Fuel Type, and Max Price per Day.
+     */
     private void showFilterDialog() {
-        android.view.View dialogView = getLayoutInflater().inflate(R.layout.dialog_vehicle_filter, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_vehicle_filter, null);
         android.widget.Spinner spinnerSeats = dialogView.findViewById(R.id.spinnerFilterSeats);
         android.widget.Spinner spinnerFuel = dialogView.findViewById(R.id.spinnerFilterFuel);
         android.widget.Spinner spinnerPrice = dialogView.findViewById(R.id.spinnerFilterPrice);
@@ -275,17 +314,19 @@ public class CustomerHomeActivity extends AppCompatActivity {
         String[] fuelOptions = {"All Fuels", "Petrol", "Diesel"};
         String[] priceOptions = {"Any Price", "Under ₹1,000/day", "Under ₹2,000/day", "Under ₹4,000/day"};
 
+        // Custom ArrayAdapter configuring black text for collapsed spinner and white text on black background for dropdown
         android.widget.ArrayAdapter<String> seatAdapter = new android.widget.ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, seatOptions) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View v = super.getView(position, convertView, parent);
-                ((TextView) v).setTextColor(android.graphics.Color.WHITE);
+                ((TextView) v).setTextColor(android.graphics.Color.BLACK);
                 return v;
             }
             @Override
             public View getDropDownView(int position, View convertView, ViewGroup parent) {
                 View v = super.getDropDownView(position, convertView, parent);
-                ((TextView) v).setTextColor(android.graphics.Color.BLACK);
+                ((TextView) v).setTextColor(android.graphics.Color.WHITE);
+                v.setBackgroundColor(android.graphics.Color.BLACK);
                 return v;
             }
         };
@@ -295,13 +336,14 @@ public class CustomerHomeActivity extends AppCompatActivity {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View v = super.getView(position, convertView, parent);
-                ((TextView) v).setTextColor(android.graphics.Color.WHITE);
+                ((TextView) v).setTextColor(android.graphics.Color.BLACK);
                 return v;
             }
             @Override
             public View getDropDownView(int position, View convertView, ViewGroup parent) {
                 View v = super.getDropDownView(position, convertView, parent);
-                ((TextView) v).setTextColor(android.graphics.Color.BLACK);
+                ((TextView) v).setTextColor(android.graphics.Color.WHITE);
+                v.setBackgroundColor(android.graphics.Color.BLACK);
                 return v;
             }
         };
@@ -311,13 +353,14 @@ public class CustomerHomeActivity extends AppCompatActivity {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View v = super.getView(position, convertView, parent);
-                ((TextView) v).setTextColor(android.graphics.Color.WHITE);
+                ((TextView) v).setTextColor(android.graphics.Color.BLACK);
                 return v;
             }
             @Override
             public View getDropDownView(int position, View convertView, ViewGroup parent) {
                 View v = super.getDropDownView(position, convertView, parent);
-                ((TextView) v).setTextColor(android.graphics.Color.BLACK);
+                ((TextView) v).setTextColor(android.graphics.Color.WHITE);
+                v.setBackgroundColor(android.graphics.Color.BLACK);
                 return v;
             }
         };
@@ -390,6 +433,10 @@ public class CustomerHomeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Filters vehicle cards by evaluating both text query and active filter variables (Seats, Fuel, Price).
+     * @param query Search query string entered in EditText.
+     */
     private void filterVehicles(String query) {
         for (VehicleItem item : vehicleList) {
             if (item.cardView != null) {

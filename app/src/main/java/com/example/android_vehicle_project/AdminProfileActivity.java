@@ -9,19 +9,29 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+/**
+ * AdminProfileActivity displays a clean, read-only Admin Profile view matching the Customer Profile card layout.
+ * Displays: Full Name Header, Username Header, First Name, Last Name, Phone Number, and a Logout button.
+ */
 public class AdminProfileActivity extends AppCompatActivity {
 
+    // View declarations
     private TextView tvProfileName, tvProfileUsername, tvFirstName, tvLastName, tvPhone;
     private Button btnLogoutProfile;
 
+    // Database helper & target admin username
     private DatabaseHandler dbHandler;
-    private final String CURRENT_ADMIN_USERNAME = "admin";
+    private static final String CURRENT_ADMIN_USERNAME = "admin1";
 
+    /**
+     * Activity creation callback initializes toolbar, database helper, view bindings, and logout listener.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_profile);
 
+        // Toolbar setup with back arrow navigation
         Toolbar toolbar = findViewById(R.id.toolbarProfile);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -35,6 +45,7 @@ public class AdminProfileActivity extends AppCompatActivity {
         initViews();
         loadAdminProfile();
 
+        // Logout button listener clears activity task stack
         btnLogoutProfile.setOnClickListener(v -> {
             Intent intent = new Intent(AdminProfileActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -43,6 +54,9 @@ public class AdminProfileActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Binds layout text views and logout button.
+     */
     private void initViews() {
         tvProfileName = findViewById(R.id.tvProfileName);
         tvProfileUsername = findViewById(R.id.tvProfileUsername);
@@ -52,6 +66,9 @@ public class AdminProfileActivity extends AppCompatActivity {
         btnLogoutProfile = findViewById(R.id.btnLogoutProfile);
     }
 
+    /**
+     * Queries Admin profile record from SQLite database and binds values to read-only TextViews.
+     */
     private void loadAdminProfile() {
         Cursor cursor = dbHandler.getUserByUsername(CURRENT_ADMIN_USERNAME);
 
@@ -63,7 +80,7 @@ public class AdminProfileActivity extends AppCompatActivity {
 
             String uname = unameIdx != -1 ? cursor.getString(unameIdx) : CURRENT_ADMIN_USERNAME;
             String fname = fnameIdx != -1 ? cursor.getString(fnameIdx) : "Admin";
-            String lname = lnameIdx != -1 ? cursor.getString(lnameIdx) : "System";
+            String lname = lnameIdx != -1 ? cursor.getString(lnameIdx) : "One";
             String phone = phoneIdx != -1 ? cursor.getString(phoneIdx) : "N/A";
 
             tvProfileName.setText((fname + " " + lname).trim());
@@ -75,11 +92,11 @@ public class AdminProfileActivity extends AppCompatActivity {
             cursor.close();
         } else {
             if (cursor != null) cursor.close();
-            tvProfileName.setText("Admin System");
+            tvProfileName.setText("Admin One");
             tvProfileUsername.setText("Username: " + CURRENT_ADMIN_USERNAME);
             tvFirstName.setText("Admin");
-            tvLastName.setText("System");
-            tvPhone.setText("9999999999");
+            tvLastName.setText("One");
+            tvPhone.setText("9999999991");
         }
     }
 }

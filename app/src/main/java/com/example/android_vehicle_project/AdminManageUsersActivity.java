@@ -18,15 +18,27 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * AdminManageUsersActivity handles user account management for System Administrators.
+ * Features:
+ * 1. Queries all registered user accounts (Customers and Admins) from SQLite database.
+ * 2. Binds user details (Name, Email, Phone, Role) to item_admin_user.xml views.
+ * 3. Provides user account deletion with a styled red confirmation dialog for customer accounts.
+ */
 public class AdminManageUsersActivity extends AppCompatActivity {
 
+    // View declarations
     private ImageView ivBack;
     private RecyclerView rvAdminUsers;
     
+    // Database helper & user list dataset
     private DatabaseHandler dbHandler;
     private UsersAdapter adapter;
     private List<UserRecord> userList;
 
+    /**
+     * Initializes activity views, database helper, toolbar listeners, and RecyclerView.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,12 +49,16 @@ public class AdminManageUsersActivity extends AppCompatActivity {
         ivBack = findViewById(R.id.ivBack);
         rvAdminUsers = findViewById(R.id.rvAdminUsers);
 
+        // Toolbar back navigation
         ivBack.setOnClickListener(v -> finish());
 
         setupRecyclerView();
         loadDataFromDatabase();
     }
 
+    /**
+     * Configures RecyclerView layout manager and adapter.
+     */
     private void setupRecyclerView() {
         userList = new ArrayList<>();
         adapter = new UsersAdapter(userList);
@@ -50,6 +66,9 @@ public class AdminManageUsersActivity extends AppCompatActivity {
         rvAdminUsers.setAdapter(adapter);
     }
 
+    /**
+     * Queries all user records from SQLite database and populates userList.
+     */
     private void loadDataFromDatabase() {
         userList.clear();
         Cursor cursor = dbHandler.getAllUsers();
@@ -72,6 +91,12 @@ public class AdminManageUsersActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
+    /**
+     * Shows a styled confirmation dialog and deletes a user account from SQLite database.
+     *
+     * @param userId Primary key user_id.
+     * @param position RecyclerView adapter item position.
+     */
     private void deleteUser(int userId, int position) {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Delete User")
@@ -91,6 +116,7 @@ public class AdminManageUsersActivity extends AppCompatActivity {
 
         dialog.show();
 
+        // Style positive button text red
         if (dialog.getButton(AlertDialog.BUTTON_POSITIVE) != null) {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.error_red));
         }
@@ -99,8 +125,9 @@ public class AdminManageUsersActivity extends AppCompatActivity {
         }
     }
 
-    // ------------------ INNER CLASSES FOR RECYCLER VIEW ------------------ //
-
+    /**
+     * Data model representing a user account record for Admin view.
+     */
     private static class UserRecord {
         int id;
         String name, email, phone, role;
@@ -114,6 +141,9 @@ public class AdminManageUsersActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * RecyclerView Adapter binding UserRecord fields to item_admin_user.xml views.
+     */
     private class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> {
 
         private final List<UserRecord> items;
@@ -140,7 +170,7 @@ public class AdminManageUsersActivity extends AppCompatActivity {
 
             if (record.role.equalsIgnoreCase("admin")) {
                 holder.tvUserRole.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
-                holder.ivDeleteUser.setVisibility(View.GONE); // Don't allow deleting admins here easily
+                holder.ivDeleteUser.setVisibility(View.GONE); // Hide delete button for Admin accounts
             } else {
                 holder.tvUserRole.setTextColor(getResources().getColor(R.color.primary_navy));
                 holder.ivDeleteUser.setVisibility(View.VISIBLE);

@@ -17,19 +17,33 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+/**
+ * CustomerProfileActivity displays customer profile details in read-only mode and
+ * allows editing personal information (First Name, Last Name, Email, Phone, Address, Driving License).
+ * Updates are saved to both SQLite database and SharedPreferences.
+ */
 public class CustomerProfileActivity extends AppCompatActivity {
 
+    // Read-only text views
     private TextView tvProfileName, tvProfileUsername, tvProfileEmail, tvProfilePhone, tvProfileAddress, tvProfileLicense;
+    
+    // Editable input fields
     private EditText etEditFirstName, etEditLastName, etEditEmail, etEditPhone, etEditAddress, etEditLicense;
+    
+    // Card containers & action buttons
     private LinearLayout cardProfileView, cardProfileEdit;
     private Button btnEditProfile, btnSaveProfile, btnCancelEdit, btnLogoutProfile;
     private ScrollView scrollViewProfile;
 
+    // Database helper & active user credentials
     private DatabaseHandler dbHandler;
     private String username;
     private String currentFirstName = "Priya";
     private String currentLastName = "Sharma";
 
+    /**
+     * Initializes activity components, binds views, auto-scroll focus listeners, and button handlers on creation.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,20 +51,21 @@ public class CustomerProfileActivity extends AppCompatActivity {
 
         dbHandler = new DatabaseHandler(this);
 
+        // Setup toolbar back navigation
         Toolbar toolbar = findViewById(R.id.toolbarProfile);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
 
-        // Username
+        // Extract customer username intent extra
         username = getIntent().getStringExtra("USERNAME");
         if (username == null || username.isEmpty()) {
             username = "priya";
         }
 
-        // ScrollView
+        // Bind ScrollView
         scrollViewProfile = findViewById(R.id.scrollViewProfile);
 
-        // Bind Read-Only Views
+        // Bind Read-Only View components
         tvProfileName = findViewById(R.id.tvProfileName);
         tvProfileUsername = findViewById(R.id.tvProfileUsername);
         tvProfileEmail = findViewById(R.id.tvProfileEmail);
@@ -58,7 +73,7 @@ public class CustomerProfileActivity extends AppCompatActivity {
         tvProfileAddress = findViewById(R.id.tvProfileAddress);
         tvProfileLicense = findViewById(R.id.tvProfileLicense);
 
-        // Bind Edit Mode Views
+        // Bind Edit Mode input components
         etEditFirstName = findViewById(R.id.etEditFirstName);
         etEditLastName = findViewById(R.id.etEditLastName);
         etEditEmail = findViewById(R.id.etEditEmail);
@@ -66,7 +81,7 @@ public class CustomerProfileActivity extends AppCompatActivity {
         etEditAddress = findViewById(R.id.etEditAddress);
         etEditLicense = findViewById(R.id.etEditLicense);
 
-        // Auto-scroll focused input field above soft keyboard
+        // Auto-scroll focus listener keeping focused input fields visible above soft keyboard
         View.OnFocusChangeListener autoScrollFocusListener = (v, hasFocus) -> {
             if (hasFocus && scrollViewProfile != null) {
                 scrollViewProfile.postDelayed(() -> {
@@ -82,7 +97,7 @@ public class CustomerProfileActivity extends AppCompatActivity {
         etEditAddress.setOnFocusChangeListener(autoScrollFocusListener);
         etEditLicense.setOnFocusChangeListener(autoScrollFocusListener);
 
-        // Bind Containers & Buttons
+        // Bind Containers & Action Buttons
         cardProfileView = findViewById(R.id.cardProfileView);
         cardProfileEdit = findViewById(R.id.cardProfileEdit);
 
@@ -91,14 +106,15 @@ public class CustomerProfileActivity extends AppCompatActivity {
         btnCancelEdit = findViewById(R.id.btnCancelEdit);
         btnLogoutProfile = findViewById(R.id.btnLogoutProfile);
 
-        // Load initial profile data
+        // Load initial customer profile data from SQLite / SharedPreferences
         loadProfileData();
 
-        // Button Listeners
+        // Button action listeners
         btnEditProfile.setOnClickListener(v -> switchToEditMode());
         btnCancelEdit.setOnClickListener(v -> switchToViewMode());
         btnSaveProfile.setOnClickListener(v -> handleSaveProfile());
 
+        // Logout handler clearing activity stack
         btnLogoutProfile.setOnClickListener(v -> {
             Intent intent = new Intent(CustomerProfileActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -107,6 +123,9 @@ public class CustomerProfileActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Queries customer profile details from SQLite database (or SharedPreferences fallback) and populates UI.
+     */
     private void loadProfileData() {
         Cursor cursor = dbHandler.getUserByUsername(username);
 
@@ -130,7 +149,7 @@ public class CustomerProfileActivity extends AppCompatActivity {
             cursor.close();
         }
 
-        // Fallback to SharedPreferences if cursor details are empty
+        // Fallback to SharedPreferences if DB record details are empty
         if (fname.isEmpty() && phone.isEmpty()) {
             SharedPreferences prefs = getSharedPreferences("RideRentPrefs", MODE_PRIVATE);
             if (username.equals("priya")) {
@@ -161,6 +180,9 @@ public class CustomerProfileActivity extends AppCompatActivity {
         tvProfileLicense.setText(license.isEmpty() ? "KA01 20230099887" : license);
     }
 
+    /**
+     * Pre-fills edit form with current details and switches UI from view mode card to edit mode card.
+     */
     private void switchToEditMode() {
         etEditFirstName.setText(currentFirstName);
         etEditLastName.setText(currentLastName);
@@ -177,6 +199,9 @@ public class CustomerProfileActivity extends AppCompatActivity {
         etEditFirstName.requestFocus();
     }
 
+    /**
+     * Hides edit form card and switches UI back to read-only profile card view.
+     */
     private void switchToViewMode() {
         cardProfileView.setVisibility(View.VISIBLE);
         cardProfileEdit.setVisibility(View.GONE);
@@ -184,6 +209,9 @@ public class CustomerProfileActivity extends AppCompatActivity {
         btnLogoutProfile.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Validates updated profile fields and saves changes to both SQLite database and SharedPreferences.
+     */
     private void handleSaveProfile() {
         String fname = etEditFirstName.getText().toString().trim();
         String lname = etEditLastName.getText().toString().trim();
@@ -192,6 +220,7 @@ public class CustomerProfileActivity extends AppCompatActivity {
         String address = etEditAddress.getText().toString().trim();
         String license = etEditLicense.getText().toString().trim();
 
+        // Field validations
         if (TextUtils.isEmpty(fname)) {
             Toast.makeText(this, "Please enter first name", Toast.LENGTH_SHORT).show();
             etEditFirstName.requestFocus();
@@ -222,10 +251,10 @@ public class CustomerProfileActivity extends AppCompatActivity {
             return;
         }
 
-        // Save to Database
+        // Persist updates to SQLite Database
         dbHandler.updateUserProfile(username, fname, lname, email, phone, address, license);
 
-        // Save to SharedPreferences
+        // Persist updates to SharedPreferences
         SharedPreferences.Editor editor = getSharedPreferences("RideRentPrefs", MODE_PRIVATE).edit();
         editor.putString("fname_" + username, fname);
         editor.putString("lname_" + username, lname);
@@ -235,7 +264,7 @@ public class CustomerProfileActivity extends AppCompatActivity {
         editor.putString("license_" + username, license);
         editor.apply();
 
-        // Refresh View Data & Switch back
+        // Refresh read-only UI fields and switch back to view mode
         loadProfileData();
         switchToViewMode();
 

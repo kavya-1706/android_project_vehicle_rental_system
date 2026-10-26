@@ -6,10 +6,17 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/**
+ * DatabaseHandler manages the SQLite database ("RideRent.db") for the application.
+ * It creates, updates, and provides helper methods to query and manipulate the three primary tables:
+ * 1. users: Stores customer and admin accounts, personal info, and credentials.
+ * 2. vehicles: Stores vehicle inventory, specs, status, and daily rental pricing.
+ * 3. bookings: Stores rental transactions, dates, total costs, payment statuses, and reviews.
+ */
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "RideRent.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 6;
 
     // Table Names
     public static final String TABLE_USERS = "users";
@@ -56,19 +63,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String COLUMN_RATING = "rating";
     public static final String COLUMN_LATE_FINE = "late_fine";
 
+    /**
+     * Constructs the SQLiteOpenHelper with the database name and version.
+     * @param context App context.
+     */
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    /**
+     * Configures database connection properties before table creation or migration.
+     * Enables foreign key constraints to maintain relational integrity between tables.
+     */
     @Override
     public void onConfigure(SQLiteDatabase db) {
         super.onConfigure(db);
         db.setForeignKeyConstraintsEnabled(true);
     }
 
+    /**
+     * Executes table creation SQL statements when the database is first initialized.
+     * Seeds initial default admin users, customer accounts, vehicles, and sample bookings.
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Create users table
+        // Create users table with constraints (email, phone, license, username are unique)
         String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_USERS + " ("
                 + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_FIRST_NAME + " TEXT, "
@@ -83,7 +102,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + COLUMN_ROLE + " TEXT"
                 + ");";
 
-        // Create vehicles table
+        // Create vehicles table to store vehicle inventory and availability
         String CREATE_VEHICLES_TABLE = "CREATE TABLE " + TABLE_VEHICLES + " ("
                 + COLUMN_VEHICLE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_VEHICLE_NAME + " TEXT, "
@@ -97,7 +116,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + COLUMN_VEHICLE_STATUS + " TEXT"
                 + ");";
 
-        // Create bookings table
+        // Create bookings table with foreign key relations linking users and vehicles
         String CREATE_BOOKINGS_TABLE = "CREATE TABLE " + TABLE_BOOKINGS + " ("
                 + COLUMN_BOOKING_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_BOOKING_USER_ID + " INTEGER, "
@@ -120,10 +139,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_VEHICLES_TABLE);
         db.execSQL(CREATE_BOOKINGS_TABLE);
 
-        // Seed default users, vehicles, and bookings
+        // Populate initial default data into the database
         seedInitialData(db);
     }
 
+    /**
+     * Handles database migration when DATABASE_VERSION is incremented.
+     * Drops older tables and calls onCreate to rebuild fresh schema and seed data.
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BOOKINGS);
@@ -132,8 +155,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    /**
+     * Seeds default accounts (admins, customers), vehicles, and sample bookings upon initialization.
+     */
     private void seedInitialData(SQLiteDatabase db) {
-        // Seed Admin 1: admin1 / admin1
+        // Seed Admin 1 (admin1 / admin1)
         ContentValues admin1 = new ContentValues();
         admin1.put(COLUMN_FIRST_NAME, "Admin");
         admin1.put(COLUMN_LAST_NAME, "One");
@@ -147,7 +173,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         admin1.put(COLUMN_ROLE, "admin");
         db.insert(TABLE_USERS, null, admin1);
 
-        // Seed Admin 2: admin2 / admin2
+        // Seed Admin 2 (admin2 / admin2)
         ContentValues admin2 = new ContentValues();
         admin2.put(COLUMN_FIRST_NAME, "Admin");
         admin2.put(COLUMN_LAST_NAME, "Two");
@@ -161,7 +187,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         admin2.put(COLUMN_ROLE, "admin");
         db.insert(TABLE_USERS, null, admin2);
 
-        // Seed Customer 1: ananya18 / ananya_18
+        // Seed Customer 1 (ananya18 / ananya_18)
         ContentValues cust1 = new ContentValues();
         cust1.put(COLUMN_FIRST_NAME, "Ananya");
         cust1.put(COLUMN_LAST_NAME, "Sharma");
@@ -175,7 +201,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cust1.put(COLUMN_ROLE, "customer");
         long cust1Id = db.insert(TABLE_USERS, null, cust1);
 
-        // Seed Customer 2: pranav2020 / pranav@20
+        // Seed Customer 2 (pranav2020 / pranav@20)
         ContentValues cust2 = new ContentValues();
         cust2.put(COLUMN_FIRST_NAME, "Pranav");
         cust2.put(COLUMN_LAST_NAME, "Rao");
@@ -189,7 +215,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cust2.put(COLUMN_ROLE, "customer");
         long cust2Id = db.insert(TABLE_USERS, null, cust2);
 
-        // Seed Customer 3: rosie45 / rosie_45
+        // Seed Customer 3 (rosie45 / rosie_45)
         ContentValues cust3 = new ContentValues();
         cust3.put(COLUMN_FIRST_NAME, "Rosie");
         cust3.put(COLUMN_LAST_NAME, "DSouza");
@@ -241,7 +267,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         long vehicle3Id = db.insert(TABLE_VEHICLES, null, vehicle3);
 
         // Seed Sample Bookings for Customers
-        // 1. Booking for ananya18 (Honda City)
         ContentValues booking1 = new ContentValues();
         booking1.put(COLUMN_BOOKING_USER_ID, cust1Id);
         booking1.put(COLUMN_BOOKING_VEHICLE_ID, vehicle1Id);
@@ -252,12 +277,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         booking1.put(COLUMN_BOOKING_STATUS, "completed");
         booking1.put(COLUMN_PAYMENT_STATUS, "success");
         booking1.put(COLUMN_PAYMENT_TIME, "11:00:00");
-        booking1.put(COLUMN_FEEDBACK, "Amazing experience!");
-        booking1.put(COLUMN_RATING, 5.0);
+        booking1.put(COLUMN_FEEDBACK, "");
+        booking1.put(COLUMN_RATING, 0.0);
         booking1.put(COLUMN_LATE_FINE, 0.0);
         db.insert(TABLE_BOOKINGS, null, booking1);
 
-        // 2. Booking for pranav2020 (Royal Enfield)
         ContentValues booking2 = new ContentValues();
         booking2.put(COLUMN_BOOKING_USER_ID, cust2Id);
         booking2.put(COLUMN_BOOKING_VEHICLE_ID, vehicle2Id);
@@ -268,12 +292,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         booking2.put(COLUMN_BOOKING_STATUS, "ongoing");
         booking2.put(COLUMN_PAYMENT_STATUS, "success");
         booking2.put(COLUMN_PAYMENT_TIME, "14:30:00");
-        booking2.put(COLUMN_FEEDBACK, "Bike was in great condition.");
-        booking2.put(COLUMN_RATING, 4.5);
+        booking2.put(COLUMN_FEEDBACK, "");
+        booking2.put(COLUMN_RATING, 0.0);
         booking2.put(COLUMN_LATE_FINE, 0.0);
         db.insert(TABLE_BOOKINGS, null, booking2);
 
-        // 3. Booking for rosie45 (Mahindra Thar)
         ContentValues booking3 = new ContentValues();
         booking3.put(COLUMN_BOOKING_USER_ID, cust3Id);
         booking3.put(COLUMN_BOOKING_VEHICLE_ID, vehicle3Id);
@@ -290,7 +313,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.insert(TABLE_BOOKINGS, null, booking3);
     }
 
-    // Helper: Authenticate user credentials with specific role
+    /**
+     * Checks if credentials match a record in the users table with the specified role.
+     * @param username Entered username.
+     * @param password Entered password.
+     * @param expectedRole Required role ('customer' or 'admin').
+     * @return True if credentials match, false otherwise.
+     */
     public boolean checkUserCredentials(String username, String password, String expectedRole) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USERNAME + " = ? AND " + COLUMN_PASSWORD + " = ? AND " + COLUMN_ROLE + " = ?";
@@ -302,7 +331,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return exists;
     }
 
-    // Helper: Check if username exists
+    /**
+     * Checks if a given username already exists in the users table.
+     * @param username Username to check.
+     * @return True if username exists, false otherwise.
+     */
     public boolean checkUsernameExists(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USERNAME + " = ?";
@@ -314,7 +347,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return exists;
     }
 
-    // Helper: Check if email exists
+    /**
+     * Checks if a given email address already exists in the users table.
+     * @param email Email to check.
+     * @return True if email exists, false otherwise.
+     */
     public boolean checkEmailExists(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_EMAIL + " = ?";
@@ -326,7 +363,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return exists;
     }
 
-    // Helper: Register new customer
+    /**
+     * Inserts a new customer account record into the users table.
+     * @return True if insert succeeded, false otherwise.
+     */
     public boolean registerUser(String firstName, String lastName, String email, String dob,
                                 String phone, String address, String license, String username, String password) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -346,21 +386,32 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    // Helper: Fetch user profile cursor by username
+    /**
+     * Fetches a user record Cursor by username.
+     * @param username Username to search for.
+     * @return Cursor containing user data.
+     */
     public Cursor getUserByUsername(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USERNAME + " = ?";
         return db.rawQuery(query, new String[]{username});
     }
 
-    // Helper: Get all available vehicles
+    /**
+     * Queries all vehicles where vehicle_status is 'available'.
+     * @return Cursor containing available vehicles.
+     */
     public Cursor getAvailableVehicles() {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_VEHICLES + " WHERE " + COLUMN_VEHICLE_STATUS + " = 'available'";
         return db.rawQuery(query, null);
     }
 
-    // Helper: Get all bookings for a user
+    /**
+     * Queries all bookings for a specific customer joined with vehicle info.
+     * @param username Customer username.
+     * @return Cursor containing joined booking and vehicle data.
+     */
     public Cursor getUserBookings(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT b.*, v." + COLUMN_VEHICLE_NAME + ", v." + COLUMN_BRAND + ", v." + COLUMN_MODEL
@@ -371,7 +422,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return db.rawQuery(query, new String[]{username});
     }
 
-    // Helper: Get user ID by username
+    /**
+     * Fetches user_id for a given username.
+     * @param username Username to query.
+     * @return Primary key user_id integer, or -1 if not found.
+     */
     public int getUserIdByUsername(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT " + COLUMN_USER_ID + " FROM " + TABLE_USERS + " WHERE " + COLUMN_USERNAME + " = ?";
@@ -389,7 +444,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return userId;
     }
 
-    // Helper: Add a new booking
+    /**
+     * Inserts a new booking record into the bookings table.
+     * @return True if insert succeeded, false otherwise.
+     */
     public boolean addBooking(int userId, int vehicleId, String pickupDate, String dropDate,
                               int totalDays, double totalAmount, String bookingStatus,
                               String paymentStatus, String paymentTime) {
@@ -409,7 +467,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    // Helper: Update user profile details
+    /**
+     * Updates user profile fields for a specified username.
+     * @return True if update succeeded, false otherwise.
+     */
     public boolean updateUserProfile(String username, String firstName, String lastName, String email,
                                      String phone, String address, String license) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -427,7 +488,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     // --- ADMIN METHODS --- //
 
-    // Get all bookings (includes payments, feedback, users, vehicles)
+    /**
+     * Queries all bookings joined with user details and vehicle details for Admin view.
+     * @return Cursor containing full combined booking records.
+     */
     public Cursor getAllAdminRecords() {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT b.*, u." + COLUMN_USERNAME + ", u." + COLUMN_FIRST_NAME + ", u." + COLUMN_LAST_NAME + ", v." + COLUMN_VEHICLE_NAME + ", v." + COLUMN_BRAND + ", v." + COLUMN_MODEL + ", v." + COLUMN_VEHICLE_NUM + ", v." + COLUMN_PRICE_PER_DAY
@@ -438,14 +502,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return db.rawQuery(query, null);
     }
 
-    // Get all vehicles (Admin view)
+    /**
+     * Queries all vehicles in the database for Admin inventory management.
+     * @return Cursor containing all vehicle records.
+     */
     public Cursor getAllVehiclesAdmin() {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_VEHICLES;
         return db.rawQuery(query, null);
     }
 
-    // Add new vehicle
+    /**
+     * Inserts a new vehicle record into the vehicles table.
+     * @return True if insert succeeded, false otherwise.
+     */
     public boolean addVehicle(String name, String brand, String model, String num, String fuel,
                               int capacity, double price, String desc, String status) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -463,7 +533,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    // Update vehicle completely
+    /**
+     * Updates an existing vehicle record by vehicle_id.
+     * @return True if update succeeded, false otherwise.
+     */
     public boolean updateVehicle(int id, String name, String brand, String model, String num, String fuel,
                                  int capacity, double price, String desc, String status) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -482,14 +555,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return rows > 0;
     }
 
-    // Delete vehicle
+    /**
+     * Deletes a vehicle record by vehicle_id.
+     * @return True if delete succeeded, false otherwise.
+     */
     public boolean deleteVehicle(int vehicleId) {
         SQLiteDatabase db = this.getWritableDatabase();
         int rows = db.delete(TABLE_VEHICLES, COLUMN_VEHICLE_ID + " = ?", new String[]{String.valueOf(vehicleId)});
         return rows > 0;
     }
 
-    // Update vehicle status
+    /**
+     * Updates the availability status ('available'/'unavailable') for a vehicle.
+     * @return True if update succeeded, false otherwise.
+     */
     public boolean updateVehicleStatus(int vehicleId, String status) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -498,7 +577,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return rows > 0;
     }
 
-    // Update late return fine
+    /**
+     * Updates late return fine for a specified booking.
+     * @return True if update succeeded, false otherwise.
+     */
     public boolean updateLateFine(int bookingId, double fineAmount) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -507,13 +589,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return rows > 0;
     }
 
-    // Get all users
+    /**
+     * Queries all user records in the database.
+     * @return Cursor containing user data.
+     */
     public Cursor getAllUsers() {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_USERS, null);
     }
 
-    // Delete a user
+    /**
+     * Deletes a user account by user_id.
+     * @return True if delete succeeded, false otherwise.
+     */
     public boolean deleteUser(int userId) {
         SQLiteDatabase db = this.getWritableDatabase();
         int rows = db.delete(TABLE_USERS, COLUMN_USER_ID + " = ?", new String[]{String.valueOf(userId)});
@@ -558,10 +646,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return count;
     }
 
-    // Delete a booking
+    /**
+     * Deletes a booking record by booking_id.
+     * @param bookingId Primary key of booking to delete.
+     * @return True if delete succeeded, false otherwise.
+     */
     public boolean deleteBooking(int bookingId) {
         SQLiteDatabase db = this.getWritableDatabase();
         int rows = db.delete(TABLE_BOOKINGS, COLUMN_BOOKING_ID + " = ?", new String[]{String.valueOf(bookingId)});
+        return rows > 0;
+    }
+
+    /**
+     * Updates customer feedback comment and rating for a specified booking.
+     * @param bookingId Target booking ID.
+     * @param feedback Customer text review comment.
+     * @param rating Star rating numerical value.
+     * @return True if update succeeded, false otherwise.
+     */
+    public boolean updateBookingFeedback(int bookingId, String feedback, double rating) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_FEEDBACK, feedback);
+        values.put(COLUMN_RATING, rating);
+        int rows = db.update(TABLE_BOOKINGS, values, COLUMN_BOOKING_ID + " = ?", new String[]{String.valueOf(bookingId)});
         return rows > 0;
     }
 }

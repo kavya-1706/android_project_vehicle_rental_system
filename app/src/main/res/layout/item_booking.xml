@@ -114,6 +114,60 @@
         android:textColor="@color/text_gray"
         android:textSize="12sp" />
 
+    <!-- Feedback Display Row -->
+    <TextView
+        android:id="@+id/tvBookingFeedback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textColor="@color/primary_navy"
+        android:textSize="13sp"
+        android:textStyle="italic"
+        android:visibility="gone" />
+
+    <!-- Inline Feedback Input Section (For Completed Bookings) -->
+    <LinearLayout
+        android:id="@+id/llInlineFeedbackContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="WRITE YOUR FEEDBACK"
+            android:textColor="@color/text_gray"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etInlineFeedback"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="@drawable/bg_input"
+            android:gravity="top|start"
+            android:hint="Type your feedback here..."
+            android:inputType="textMultiLine"
+            android:padding="10dp"
+            android:textColor="@color/text_dark"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/btnSubmitInlineFeedback"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_button"
+            android:text="SUBMIT FEEDBACK"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:backgroundTint="@null" />
+    </LinearLayout>
+
     <!-- Cancel Booking Button -->
     <Button
         android:id="@+id/btnCancelBooking"

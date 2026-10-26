@@ -21,16 +21,29 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * AdminManageVehiclesActivity handles vehicle inventory management for System Administrators.
+ * Features:
+ * 1. Displays all vehicles with status badges ('AVAILABLE' or 'UNAVAILABLE').
+ * 2. Floating Action Button (FAB) to launch AdminAddEditVehicleActivity in creation mode.
+ * 3. Edit action to launch AdminAddEditVehicleActivity with VEHICLE_ID extra.
+ * 4. Delete action with styled red confirmation dialog to remove vehicles.
+ */
 public class AdminManageVehiclesActivity extends AppCompatActivity {
 
+    // View declarations
     private ImageView ivBack;
     private RecyclerView rvAdminVehicles;
     private FloatingActionButton fabAddVehicle;
 
+    // Database helper & vehicle list dataset
     private DatabaseHandler dbHandler;
     private VehiclesAdapter adapter;
     private List<VehicleRecord> vehicleList;
 
+    /**
+     * Initializes activity layout, views, listeners, and RecyclerView.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,9 +55,10 @@ public class AdminManageVehiclesActivity extends AppCompatActivity {
         rvAdminVehicles = findViewById(R.id.rvAdminVehicles);
         fabAddVehicle = findViewById(R.id.fabAddVehicle);
 
+        // Toolbar back arrow handler
         ivBack.setOnClickListener(v -> finish());
 
-        // Add New Vehicle
+        // Launch Add Vehicle screen
         fabAddVehicle.setOnClickListener(v -> {
             Intent intent = new Intent(AdminManageVehiclesActivity.this, AdminAddEditVehicleActivity.class);
             startActivity(intent);
@@ -53,13 +67,18 @@ public class AdminManageVehiclesActivity extends AppCompatActivity {
         setupRecyclerView();
     }
 
+    /**
+     * Reloads vehicle dataset when returning to this activity from Add/Edit screen.
+     */
     @Override
     protected void onResume() {
         super.onResume();
-        // Reload data whenever coming back to this screen
         loadDataFromDatabase();
     }
 
+    /**
+     * Configures RecyclerView layout manager and adapter.
+     */
     private void setupRecyclerView() {
         vehicleList = new ArrayList<>();
         adapter = new VehiclesAdapter(vehicleList);
@@ -67,6 +86,9 @@ public class AdminManageVehiclesActivity extends AppCompatActivity {
         rvAdminVehicles.setAdapter(adapter);
     }
 
+    /**
+     * Queries all vehicles from SQLite database and populates dataset.
+     */
     private void loadDataFromDatabase() {
         vehicleList.clear();
         Cursor cursor = dbHandler.getAllVehiclesAdmin();
@@ -93,6 +115,12 @@ public class AdminManageVehiclesActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
+    /**
+     * Shows confirmation dialog to delete a vehicle and removes record from SQLite database.
+     *
+     * @param vehicleId Primary key vehicle_id.
+     * @param position Position index in RecyclerView adapter.
+     */
     private void deleteVehicle(int vehicleId, int position) {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Delete Vehicle")
@@ -112,6 +140,7 @@ public class AdminManageVehiclesActivity extends AppCompatActivity {
 
         dialog.show();
 
+        // Style positive button text red
         if (dialog.getButton(AlertDialog.BUTTON_POSITIVE) != null) {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.error_red));
         }
@@ -120,8 +149,9 @@ public class AdminManageVehiclesActivity extends AppCompatActivity {
         }
     }
 
-    // ------------------ INNER CLASSES FOR RECYCLER VIEW ------------------ //
-
+    /**
+     * Data model class representing a vehicle record for Admin management.
+     */
     private static class VehicleRecord {
         int id;
         String name, brand, model, num, fuel, desc, status;
@@ -142,6 +172,9 @@ public class AdminManageVehiclesActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * RecyclerView Adapter binding VehicleRecord items to item_admin_vehicle.xml views.
+     */
     private class VehiclesAdapter extends RecyclerView.Adapter<VehiclesAdapter.ViewHolder> {
 
         private final List<VehicleRecord> items;
@@ -172,10 +205,10 @@ public class AdminManageVehiclesActivity extends AppCompatActivity {
                 holder.tvVehicleStatus.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
             }
 
-            // Edit Action
+            // Edit Action launches AdminAddEditVehicleActivity with VEHICLE_ID extra
             holder.ivEditVehicle.setOnClickListener(v -> {
                 Intent intent = new Intent(AdminManageVehiclesActivity.this, AdminAddEditVehicleActivity.class);
-                intent.putExtra("VEHICLE_ID", record.id); // Pass ID to load existing data
+                intent.putExtra("VEHICLE_ID", record.id);
                 startActivity(intent);
             });
 

@@ -10,16 +10,25 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * AdminAddEditVehicleActivity handles adding new vehicles or editing existing vehicle records in SQLite.
+ * Detects mode based on VEHICLE_ID intent extra (-1 for Add Mode, else Edit Mode).
+ */
 public class AdminAddEditVehicleActivity extends AppCompatActivity {
 
+    // View declarations
     private ImageView ivBack;
     private TextView tvToolbarTitle;
     private EditText etVehicleName, etBrand, etModel, etVehicleNum, etFuel, etCapacity, etPrice, etStatus, etDescription;
     private Button btnSaveVehicle;
 
+    // Database helper & mode state
     private DatabaseHandler dbHandler;
-    private int vehicleIdToEdit = -1; // -1 means Add Mode, else Edit Mode
+    private int vehicleIdToEdit = -1; // -1 indicates Add Mode, valid integer indicates Edit Mode
 
+    /**
+     * Activity creation callback sets up views, checks for VEHICLE_ID extra, and loads data if in Edit Mode.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +38,7 @@ public class AdminAddEditVehicleActivity extends AppCompatActivity {
 
         initViews();
 
-        // Check if we received an ID (Edit Mode)
+        // Check if an existing vehicle ID was passed in intent
         vehicleIdToEdit = getIntent().getIntExtra("VEHICLE_ID", -1);
 
         if (vehicleIdToEdit != -1) {
@@ -37,11 +46,16 @@ public class AdminAddEditVehicleActivity extends AppCompatActivity {
             loadVehicleData(vehicleIdToEdit);
         }
 
+        // Toolbar back arrow handler
         ivBack.setOnClickListener(v -> finish());
 
+        // Save button click listener
         btnSaveVehicle.setOnClickListener(v -> saveVehicle());
     }
 
+    /**
+     * Binds input components and action buttons.
+     */
     private void initViews() {
         ivBack = findViewById(R.id.ivBack);
         tvToolbarTitle = findViewById(R.id.tvToolbarTitle);
@@ -59,6 +73,10 @@ public class AdminAddEditVehicleActivity extends AppCompatActivity {
         btnSaveVehicle = findViewById(R.id.btnSaveVehicle);
     }
 
+    /**
+     * Loads existing vehicle specs from SQLite database and populates input form fields in Edit Mode.
+     * @param id Target vehicle_id.
+     */
     private void loadVehicleData(int id) {
         Cursor cursor = dbHandler.getReadableDatabase().rawQuery(
                 "SELECT * FROM " + DatabaseHandler.TABLE_VEHICLES + " WHERE " + DatabaseHandler.COLUMN_VEHICLE_ID + " = ?",
@@ -79,6 +97,9 @@ public class AdminAddEditVehicleActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Validates vehicle input fields and executes add or update operation in SQLite database.
+     */
     private void saveVehicle() {
         String name = etVehicleName.getText().toString().trim();
         String brand = etBrand.getText().toString().trim();
@@ -90,6 +111,7 @@ public class AdminAddEditVehicleActivity extends AppCompatActivity {
         String status = etStatus.getText().toString().trim();
         String desc = etDescription.getText().toString().trim();
 
+        // Field validation
         if (name.isEmpty() || brand.isEmpty() || num.isEmpty() || priceStr.isEmpty()) {
             Toast.makeText(this, "Name, Brand, Plate Number, and Price are required.", Toast.LENGTH_SHORT).show();
             return;
@@ -101,16 +123,16 @@ public class AdminAddEditVehicleActivity extends AppCompatActivity {
         boolean success;
 
         if (vehicleIdToEdit == -1) {
-            // Add New
+            // Add New Vehicle record
             success = dbHandler.addVehicle(name, brand, model, num, fuel, capacity, price, desc, status);
         } else {
-            // Update Existing
+            // Update Existing Vehicle record
             success = dbHandler.updateVehicle(vehicleIdToEdit, name, brand, model, num, fuel, capacity, price, desc, status);
         }
 
         if (success) {
             Toast.makeText(this, "Vehicle saved successfully!", Toast.LENGTH_SHORT).show();
-            finish(); // Go back to list
+            finish();
         } else {
             Toast.makeText(this, "Database error. Please try again.", Toast.LENGTH_SHORT).show();
         }

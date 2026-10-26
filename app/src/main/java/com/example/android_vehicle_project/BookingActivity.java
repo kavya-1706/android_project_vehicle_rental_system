@@ -27,8 +27,15 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * BookingActivity handles vehicle booking creation for customers.
+ * It extracts vehicle intent extras, auto-fills customer profile information, provides DatePickers
+ * for pickup and drop dates, enforces Rental Terms & Conditions, calculates total rental costs,
+ * saves new bookings into SQLite database, and displays a summary confirmation dialog.
+ */
 public class BookingActivity extends AppCompatActivity {
 
+    // Intent parameters
     private String username;
     private int vehicleId;
     private String vehicleName;
@@ -36,6 +43,7 @@ public class BookingActivity extends AppCompatActivity {
     private String vehicleModel;
     private double vehiclePrice;
 
+    // View declarations
     private TextView tvVehicleNameHeader, tvVehicleDetailsHeader, tvVehiclePriceHeader;
     private EditText etCustomerName, etCustomerPhone, etCustomerDL, etCustomerEmail;
     private EditText etPickupDate, etDropDate;
@@ -45,16 +53,22 @@ public class BookingActivity extends AppCompatActivity {
     private Button btnConfirmBooking;
     private ScrollView scrollViewBooking;
 
+    // Database helper instance
     private DatabaseHandler dbHandler;
 
+    // Date state management
     private Calendar pickupCalendar = Calendar.getInstance();
     private Calendar dropCalendar = Calendar.getInstance();
     private boolean isPickupSet = false;
     private boolean isDropSet = false;
 
+    // Date formatting constants
     private SimpleDateFormat displayDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
     private SimpleDateFormat dbDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
+    /**
+     * Initializes UI layout, extracts intent extras, sets up date pickers and button listeners on launch.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +76,7 @@ public class BookingActivity extends AppCompatActivity {
 
         dbHandler = new DatabaseHandler(this);
 
-        // Extract intent extras
+        // Extract vehicle and customer details from intent
         Intent intent = getIntent();
         username = intent.getStringExtra("USERNAME");
         if (username == null || username.isEmpty()) {
@@ -81,12 +95,12 @@ public class BookingActivity extends AppCompatActivity {
 
         vehiclePrice = intent.getDoubleExtra("VEHICLE_PRICE", 1800.00);
 
-        // Setup Toolbar
+        // Setup Toolbar back navigation
         Toolbar toolbar = findViewById(R.id.toolbarBooking);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
 
-        // Bind Views
+        // Bind layout views
         scrollViewBooking = findViewById(R.id.scrollViewBooking);
         tvVehicleNameHeader = findViewById(R.id.tvBookingVehicleNameHeader);
         tvVehicleDetailsHeader = findViewById(R.id.tvBookingVehicleDetailsHeader);
@@ -106,7 +120,7 @@ public class BookingActivity extends AppCompatActivity {
         tvTermsText = findViewById(R.id.tvTermsText);
         btnConfirmBooking = findViewById(R.id.btnConfirmBooking);
 
-        // Auto-scroll focused input fields above soft keyboard
+        // Auto-scroll focus listener keeping input fields visible above soft keyboard
         View.OnFocusChangeListener autoScrollFocusListener = (v, hasFocus) -> {
             if (hasFocus && scrollViewBooking != null) {
                 scrollViewBooking.postDelayed(() -> {
@@ -120,30 +134,34 @@ public class BookingActivity extends AppCompatActivity {
         etCustomerDL.setOnFocusChangeListener(autoScrollFocusListener);
         etCustomerEmail.setOnFocusChangeListener(autoScrollFocusListener);
 
-        // Populate Vehicle Header
+        // Populate Vehicle Header summary card
         tvVehicleNameHeader.setText(vehicleName);
         tvVehicleDetailsHeader.setText(vehicleBrand + " • " + vehicleModel);
         tvVehiclePriceHeader.setText(String.format(Locale.getDefault(), "₹%,.0f/day", vehiclePrice));
 
-        // Auto-fill Customer Info
+        // Auto-fill Customer Profile Info from SQLite / SharedPreferences
         populateCustomerInfo();
 
-        // Setup Date Pickers
+        // Setup Pick-up Date selection listener
         View.OnClickListener pickupListener = v -> showPickupDatePicker();
         rlPickupDateContainer.setOnClickListener(pickupListener);
         etPickupDate.setOnClickListener(pickupListener);
 
+        // Setup Drop Date selection listener
         View.OnClickListener dropListener = v -> showDropDatePicker();
         rlDropDateContainer.setOnClickListener(dropListener);
         etDropDate.setOnClickListener(dropListener);
 
-        // Terms and Conditions Dialog
+        // Terms and Conditions Dialog trigger
         tvTermsText.setOnClickListener(v -> showTermsDialog());
 
         // Confirm Booking Click Handler
         btnConfirmBooking.setOnClickListener(v -> handleBookingConfirmation());
     }
 
+    /**
+     * Queries customer profile details from SQLite database and populates booking form input fields.
+     */
     private void populateCustomerInfo() {
         Cursor cursor = dbHandler.getUserByUsername(username);
         String fname = "", lname = "", phone = "", license = "", email = "";
@@ -164,7 +182,7 @@ public class BookingActivity extends AppCompatActivity {
             cursor.close();
         }
 
-        // Check SharedPreferences if empty
+        // Fallback to SharedPreferences if DB details are empty
         if (fname.isEmpty() && phone.isEmpty()) {
             SharedPreferences prefs = getSharedPreferences("RideRentPrefs", MODE_PRIVATE);
             fname = prefs.getString("fname_" + username, "");
@@ -174,7 +192,7 @@ public class BookingActivity extends AppCompatActivity {
             email = prefs.getString("email_" + username, "");
         }
 
-        // Fallbacks as per specifications
+        // Apply fallbacks
         String fullName = (fname + " " + lname).trim();
         if (fullName.isEmpty() || username.equals("priya")) {
             fullName = "Priya Sharma";
@@ -195,6 +213,9 @@ public class BookingActivity extends AppCompatActivity {
         etCustomerEmail.setText(email);
     }
 
+    /**
+     * Launches DatePickerDialog for pick-up date selection, ensuring past dates cannot be picked.
+     */
     private void showPickupDatePicker() {
         Calendar today = Calendar.getInstance();
         int year = isPickupSet ? pickupCalendar.get(Calendar.YEAR) : today.get(Calendar.YEAR);
@@ -212,18 +233,21 @@ public class BookingActivity extends AppCompatActivity {
             etPickupDate.setText(displayDateFormat.format(pickupCalendar.getTime()));
             isPickupSet = true;
 
-            // Adjust drop date if it's earlier than pick-up date
+            // Automatically adjust drop date if it becomes earlier than pick-up
             if (isDropSet && dropCalendar.before(pickupCalendar)) {
                 dropCalendar.setTime(pickupCalendar.getTime());
                 etDropDate.setText(displayDateFormat.format(dropCalendar.getTime()));
             }
         }, year, month, day);
 
-        // Prevent selecting past dates
+        // Disallow selecting past dates
         dialog.getDatePicker().setMinDate(today.getTimeInMillis() - 1000);
         dialog.show();
     }
 
+    /**
+     * Launches DatePickerDialog for drop date selection, ensuring drop date is on or after pick-up.
+     */
     private void showDropDatePicker() {
         Calendar today = Calendar.getInstance();
         Calendar baseCalendar = isDropSet ? dropCalendar : (isPickupSet ? pickupCalendar : today);
@@ -256,6 +280,9 @@ public class BookingActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * Displays Rental Terms & Conditions popup dialog and checks terms checkbox upon agreement.
+     */
     private void showTermsDialog() {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Rental Terms & Conditions")
@@ -278,6 +305,9 @@ public class BookingActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Validates form inputs, calculates total days and cost, saves booking to SQLite DB, and presents summary dialog.
+     */
     private void handleBookingConfirmation() {
         String customerName = etCustomerName.getText().toString().trim();
         String customerPhone = etCustomerPhone.getText().toString().trim();
@@ -297,7 +327,7 @@ public class BookingActivity extends AppCompatActivity {
             return;
         }
 
-        // 2. Validate Dates
+        // 2. Validate Pick-up and Drop Dates
         if (!isPickupSet || TextUtils.isEmpty(etPickupDate.getText().toString().trim())) {
             Toast.makeText(this, "Please select pick-up date", Toast.LENGTH_SHORT).show();
             return;
@@ -313,33 +343,34 @@ public class BookingActivity extends AppCompatActivity {
             return;
         }
 
-        // 3. Validate Terms Checkbox
+        // 3. Validate Terms Checkbox Agreement
         if (!cbTerms.isChecked()) {
             Toast.makeText(this, "You must agree to the rental terms & conditions to proceed", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Calculate total rental days & amount
+        // Calculate total rental duration in days and total price
         long diffInMillis = dropCalendar.getTimeInMillis() - pickupCalendar.getTimeInMillis();
         int totalDays = (int) TimeUnit.MILLISECONDS.toDays(diffInMillis) + 1;
         if (totalDays < 1) totalDays = 1;
 
         double totalAmount = vehiclePrice * totalDays;
 
-        // Get User ID from Database
+        // Fetch User ID from database
         int userId = dbHandler.getUserIdByUsername(username);
         if (userId == -1) {
             userId = 2; // Default fallback ID for demo
         }
 
-        // Save Booking in SQLite Database
+        // Format dates for SQLite database insertion
         String pickupDbStr = dbDateFormat.format(pickupCalendar.getTime());
         String dropDbStr = dbDateFormat.format(dropCalendar.getTime());
         String payTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
 
+        // Insert booking into SQLite database
         boolean isSaved = dbHandler.addBooking(userId, vehicleId, pickupDbStr, dropDbStr, totalDays, totalAmount, "upcoming", "success", payTime);
 
-        // Custom Title View with White Text (#FFFFFF)
+        // Build summary dialog header
         TextView customTitle = new TextView(this);
         customTitle.setText("Booking Summary & Confirmation");
         customTitle.setTextSize(18);
@@ -347,7 +378,7 @@ public class BookingActivity extends AppCompatActivity {
         customTitle.setTextColor(Color.WHITE);
         customTitle.setPadding(48, 48, 48, 24);
 
-        // Display Booking Summary Dialog with Dark Theme & White Title
+        // Build summary message
         String summaryMessage = "Vehicle: " + vehicleName + "\n" +
                 "Customer: " + customerName + "\n" +
                 "Phone: " + customerPhone + "\n" +
@@ -359,6 +390,7 @@ public class BookingActivity extends AppCompatActivity {
                 "\nTotal Amount: ₹" + String.format(Locale.getDefault(), "%,.0f", totalAmount) + "\n" +
                 "Payment Status: SUCCESSFUL";
 
+        // Display summary alert dialog
         new AlertDialog.Builder(this, R.style.BookingDialogTheme)
                 .setCustomTitle(customTitle)
                 .setMessage(summaryMessage)
