@@ -43,18 +43,18 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <ImageView
-                android:id="@+id/ivSearchBookings"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_search"
-                app:tint="@color/white"
-                android:contentDescription="Search"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/ivSearchBookings"-->
+<!--                android:layout_width="28dp"-->
+<!--                android:layout_height="28dp"-->
+<!--                android:layout_alignParentEnd="true"-->
+<!--                android:layout_centerVertical="true"-->
+<!--                android:src="@drawable/ic_search"-->
+<!--                app:tint="@color/white"-->
+<!--                android:contentDescription="Search"-->
+<!--                android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--                android:clickable="true"-->
+<!--                android:focusable="true"/>-->
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
 

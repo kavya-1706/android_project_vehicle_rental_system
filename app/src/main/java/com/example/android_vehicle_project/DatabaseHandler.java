@@ -1,5 +1,4 @@
 package com.example.android_vehicle_project;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -61,7 +60,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String COLUMN_PAYMENT_TIME = "payment_time";
     public static final String COLUMN_FEEDBACK = "feedback";
     public static final String COLUMN_RATING = "rating";
-    public static final String COLUMN_LATE_FINE = "late_fine";
+    //public static final String COLUMN_LATE_FINE = "late_fine";
 
     /**
      * Constructs the SQLiteOpenHelper with the database name and version.
@@ -130,7 +129,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + COLUMN_PAYMENT_TIME + " TEXT, "
                 + COLUMN_FEEDBACK + " TEXT, "
                 + COLUMN_RATING + " REAL, "
-                + COLUMN_LATE_FINE + " REAL DEFAULT 0.0, "
+               // + COLUMN_LATE_FINE + " REAL DEFAULT 0.0, "
                 + "FOREIGN KEY(" + COLUMN_BOOKING_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "), "
                 + "FOREIGN KEY(" + COLUMN_BOOKING_VEHICLE_ID + ") REFERENCES " + TABLE_VEHICLES + "(" + COLUMN_VEHICLE_ID + ")"
                 + ");";
@@ -279,7 +278,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         booking1.put(COLUMN_PAYMENT_TIME, "11:00:00");
         booking1.put(COLUMN_FEEDBACK, "");
         booking1.put(COLUMN_RATING, 0.0);
-        booking1.put(COLUMN_LATE_FINE, 0.0);
+
         db.insert(TABLE_BOOKINGS, null, booking1);
 
         ContentValues booking2 = new ContentValues();
@@ -294,7 +293,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         booking2.put(COLUMN_PAYMENT_TIME, "14:30:00");
         booking2.put(COLUMN_FEEDBACK, "");
         booking2.put(COLUMN_RATING, 0.0);
-        booking2.put(COLUMN_LATE_FINE, 0.0);
+
         db.insert(TABLE_BOOKINGS, null, booking2);
 
         ContentValues booking3 = new ContentValues();
@@ -309,7 +308,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         booking3.put(COLUMN_PAYMENT_TIME, "09:15:00");
         booking3.put(COLUMN_FEEDBACK, "");
         booking3.put(COLUMN_RATING, 0.0);
-        booking3.put(COLUMN_LATE_FINE, 0.0);
+
         db.insert(TABLE_BOOKINGS, null, booking3);
     }
 
@@ -352,16 +351,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * @param email Email to check.
      * @return True if email exists, false otherwise.
      */
-    public boolean checkEmailExists(String email) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_EMAIL + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{email});
-        boolean exists = (cursor != null && cursor.getCount() > 0);
-        if (cursor != null) {
-            cursor.close();
-        }
-        return exists;
-    }
+//    public boolean checkEmailExists(String email) {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_EMAIL + " = ?";
+//        Cursor cursor = db.rawQuery(query, new String[]{email});
+//        boolean exists = (cursor != null && cursor.getCount() > 0);
+//        if (cursor != null) {
+//            cursor.close();
+//        }
+//        return exists;
+//    }
 
     /**
      * Inserts a new customer account record into the users table.
@@ -581,13 +580,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Updates late return fine for a specified booking.
      * @return True if update succeeded, false otherwise.
      */
-    public boolean updateLateFine(int bookingId, double fineAmount) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_LATE_FINE, fineAmount);
-        int rows = db.update(TABLE_BOOKINGS, values, COLUMN_BOOKING_ID + " = ?", new String[]{String.valueOf(bookingId)});
-        return rows > 0;
-    }
+//    public boolean updateLateFine(int bookingId, double fineAmount) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        ContentValues values = new ContentValues();
+//        //values.put(COLUMN_LATE_FINE, fineAmount);
+//        int rows = db.update(TABLE_BOOKINGS, values, COLUMN_BOOKING_ID + " = ?", new String[]{String.valueOf(bookingId)});
+//        return rows > 0;
+//    }
 
     /**
      * Queries all user records in the database.

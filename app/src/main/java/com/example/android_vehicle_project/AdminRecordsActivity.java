@@ -58,7 +58,7 @@ public class AdminRecordsActivity extends AppCompatActivity {
      */
     private void initViews() {
         ivBack = findViewById(R.id.ivBack);
-        ivSearchBookings = findViewById(R.id.ivSearchBookings);
+        //ivSearchBookings = findViewById(R.id.ivSearchBookings);
         rvAdminBookings = findViewById(R.id.rvAdminBookings);
     }
 
@@ -68,9 +68,9 @@ public class AdminRecordsActivity extends AppCompatActivity {
     private void setupClickListeners() {
         ivBack.setOnClickListener(v -> finish());
 
-        ivSearchBookings.setOnClickListener(v -> {
-            Toast.makeText(this, "Search functionality to be implemented", Toast.LENGTH_SHORT).show();
-        });
+//        ivSearchBookings.setOnClickListener(v -> {
+//            Toast.makeText(this, "Search functionality to be implemented", Toast.LENGTH_SHORT).show();
+//        });
     }
 
     /**

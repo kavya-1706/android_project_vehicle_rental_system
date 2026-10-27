@@ -88,9 +88,9 @@ public class CustomerHomeActivity extends AppCompatActivity {
         // Extract logged-in customer credentials
         username = getIntent().getStringExtra("USERNAME");
         firstName = getIntent().getStringExtra("FIRST_NAME");
-        if (firstName == null || firstName.isEmpty()) {
-            firstName = "Priya";
-        }
+//        if (firstName == null || firstName.isEmpty()) {
+//            firstName = "Priya";
+//        }
 
         // Set customer greeting in toolbar header
         tvGreeting = findViewById(R.id.tvGreeting);

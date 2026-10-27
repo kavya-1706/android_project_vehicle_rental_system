@@ -94,7 +94,7 @@ public class AdminLoginActivity extends AppCompatActivity {
             boolean isValidAdminInDb = dbHandler.checkUserCredentials(username, password, "admin");
 
             // Validate against DB or fallback demo admin credentials
-            if (isValidAdminInDb || (username.equals("admin") && (password.equals("admin") || password.equals("admin123")))) {
+            if (isValidAdminInDb) {
                 Toast.makeText(this, "Admin Login successful!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(AdminLoginActivity.this, AdminDashboardActivity.class);
                 startActivity(intent);

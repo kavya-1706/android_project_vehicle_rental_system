@@ -123,15 +123,15 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences prefs = getSharedPreferences("RideRentPrefs", MODE_PRIVATE);
 
             // Default demo customer fallback
-            if ((username.equals("abcd") && password.equals("abcd")) || (username.equals("priya") && password.equals("123456"))) {
-                Toast.makeText(MainActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, CustomerHomeActivity.class);
-                intent.putExtra("USERNAME", username);
-                intent.putExtra("FIRST_NAME", "Priya");
-                startActivity(intent);
-                finish();
-                return;
-            }
+//            if ((username.equals("abcd") && password.equals("abcd")) || (username.equals("priya") && password.equals("123456"))) {
+//                Toast.makeText(MainActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent(MainActivity.this, CustomerHomeActivity.class);
+//                intent.putExtra("USERNAME", username);
+//                intent.putExtra("FIRST_NAME", "Priya");
+//                startActivity(intent);
+//                finish();
+//                return;
+//            }
 
             // Check registered users stored in SharedPreferences
             String savedPassword = prefs.getString("pwd_" + username, null);

@@ -44,9 +44,9 @@ public class PastBookingsActivity extends AppCompatActivity {
 
         // Extract customer username intent extra
         username = getIntent().getStringExtra("USERNAME");
-        if (username == null || username.isEmpty()) {
-            username = "priya";
-        }
+//        if (username == null || username.isEmpty()) {
+//            username = "priya";
+//        }
 
         dbHandler = new DatabaseHandler(this);
         loadCustomerBookings();

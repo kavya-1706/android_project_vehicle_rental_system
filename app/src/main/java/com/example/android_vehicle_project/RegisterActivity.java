@@ -127,7 +127,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         // 3. Phone length validation
-        if (phone.length() < 10) {
+        if (phone.length() != 10) {
             Toast.makeText(this, "Please enter a valid phone number", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -158,7 +158,7 @@ public class RegisterActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("RideRentPrefs", MODE_PRIVATE);
         DatabaseHandler dbHandler = new DatabaseHandler(this);
 
-        if (dbHandler.checkUsernameExists(username) || prefs.contains("pwd_" + username) || username.equals("priya") || username.equals("abcd")) {
+        if (dbHandler.checkUsernameExists(username) || prefs.contains("pwd_" + username)) {
             Toast.makeText(this, "Username is already registered. Choose another.", Toast.LENGTH_SHORT).show();
             return;
         }
