@@ -129,7 +129,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + COLUMN_PAYMENT_TIME + " TEXT, "
                 + COLUMN_FEEDBACK + " TEXT, "
                 + COLUMN_RATING + " REAL, "
-               // + COLUMN_LATE_FINE + " REAL DEFAULT 0.0, "
+
                 + "FOREIGN KEY(" + COLUMN_BOOKING_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "), "
                 + "FOREIGN KEY(" + COLUMN_BOOKING_VEHICLE_ID + ") REFERENCES " + TABLE_VEHICLES + "(" + COLUMN_VEHICLE_ID + ")"
                 + ");";
